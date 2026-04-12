@@ -143,7 +143,7 @@ export default function ClientDashboard() {
                       <p className="text-purple-400 text-xs capitalize">{asset.file_type} · {asset.uploader_name}</p>
                     </div>
                   </div>
-                  <a href={`http://localhost:5000${asset.file_url}`}
+                  <a href={`https://delightmusicstudio.onrender.com${asset.file_url}`}
                     download target="_blank" rel="noreferrer"
                     className="btn-gold text-xs px-4 py-2 flex-shrink-0">
                     <Download size={13} /> Download
@@ -173,7 +173,7 @@ export default function ClientDashboard() {
                     </div>
                   </div>
                   {cert.certificate_url && (
-                    <a href={`http://localhost:5000${cert.certificate_url}`}
+                    <a href={`https://delightmusicstudio.onrender.com${cert.certificate_url}`}
                       download target="_blank" rel="noreferrer"
                       className="btn-gold text-xs px-4 py-2">
                       <Download size={13} /> Download
