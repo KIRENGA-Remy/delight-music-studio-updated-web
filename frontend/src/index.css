@@ -25,7 +25,7 @@
   .badge-purple { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-display font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30; }
   .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-display font-bold bg-green-500/20 text-green-400 border border-green-500/30; }
   .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-display font-bold bg-red-500/20 text-red-400 border border-red-500/30; }
-  .nav-item     { @apply flex items-center gap-3 px-4 py-3 rounded-xl font-display font-medium text-sm text-purple-200 hover:text-white hover:bg-purple-800/30 transition-all cursor-pointer; }
+  .nav-item     { @apply flex items-center gap-3 px-4 py-3 rounded-xl font-display font-medium text-xl text-purple-200 hover:text-white hover:bg-purple-800/30 transition-all cursor-pointer; }
   .nav-active   { @apply text-white bg-purple-gradient shadow-purple; }
   .stat-card    { @apply card-dark p-5 hover:border-purple-600/50 transition-all; }
   .section-title { @apply font-display font-bold text-3xl md:text-4xl; }

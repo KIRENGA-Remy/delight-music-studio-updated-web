@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 const MANAGER_NAV = [
   { to: '/dashboard/manager',             label: 'Overview',    icon: LayoutDashboard },
-  { to: '/dashboard/manager/leads',       label: 'Leads',       icon: Users },
+  { to: '/dashboard/manager/leads',       label: 'Partner Requests',       icon: Users },
   { to: '/dashboard/manager/pipeline',    label: 'Pipeline',    icon: FolderKanban },
   { to: '/dashboard/manager/financials',  label: 'Financials',  icon: DollarSign },
   { to: '/dashboard/manager/certificates',label: 'Certificates',icon: Award },
@@ -56,10 +56,10 @@ const DashboardSidebar = () => {
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-purple-gradient flex items-center justify-center">
-              <Music size={15} className="text-white" />
+              <Music size={24} className="text-white" />
             </div>
             <div>
-              <p className="font-display font-bold text-white text-md leading-none">Delight</p>
+              <p className="font-display font-bold text-white text-xl leading-none">Delight</p>
               <p className="text-gold-400 text-[10px] font-display tracking-wider">MUSIC STUDIO</p>
             </div>
           </div>
