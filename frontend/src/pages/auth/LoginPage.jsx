@@ -47,18 +47,18 @@ export default function LoginPage() {
             <Music size={28} className="text-white" />
           </div>
           <h1 className="font-display font-bold text-3xl text-white">Delight Music</h1>
-          <p className="text-purple-300 text-sm mt-1">Sign in to your studio portal</p>
+          <p className="text-purple-300 text-md mt-1">Sign in to your studio portal</p>
         </div>
 
         <div className="glass p-8">
           {/* Toggle email/phone */}
           <div className="flex gap-2 mb-6 p-1 bg-dark-800/60 rounded-xl">
             <button onClick={() => setUsePhone(false)}
-              className={`flex-1 py-2 rounded-lg text-sm font-display font-semibold transition-all ${!usePhone ? 'bg-purple-gradient text-white shadow-purple' : 'text-purple-300 hover:text-white'}`}>
+              className={`flex-1 py-2 rounded-lg text-md font-display font-semibold transition-all ${!usePhone ? 'bg-purple-gradient text-white shadow-purple' : 'text-purple-300 hover:text-white'}`}>
               Email
             </button>
             <button onClick={() => setUsePhone(true)}
-              className={`flex-1 py-2 rounded-lg text-sm font-display font-semibold transition-all ${usePhone ? 'bg-purple-gradient text-white shadow-purple' : 'text-purple-300 hover:text-white'}`}>
+              className={`flex-1 py-2 rounded-lg text-md font-display font-semibold transition-all ${usePhone ? 'bg-purple-gradient text-white shadow-purple' : 'text-purple-300 hover:text-white'}`}>
               Phone
             </button>
           </div>
@@ -81,7 +81,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="label-input mb-0">Password</label>
-                <Link to="/forgot-password" className="text-xs text-gold-400 hover:text-gold-300 font-display font-semibold">
+                <Link to="/forgot-password" className="text-md text-gold-400 hover:text-gold-300 font-display font-semibold">
                   Forgot password?
                 </Link>
               </div>
@@ -111,13 +111,13 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 p-3 bg-dark-800/60 rounded-xl border border-purple-800/30 text-center">
-            <p className="text-xs text-purple-400">
+            <p className="text-md text-purple-400">
               Don't have an account? Contact the studio manager to get access.
             </p>
           </div>
 
           <div className="mt-5 text-center">
-            <p className="text-xs text-purple-500">
+            <p className="text-md text-purple-500">
               First time? Use <span className="text-gold-400 font-semibold">OTP Verification</span>
               {' → '}
               <Link to="/otp-verify" className="text-gold-400 hover:text-gold-300 font-semibold">Click here</Link>

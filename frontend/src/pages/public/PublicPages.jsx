@@ -24,12 +24,12 @@ export const TestimonialsPage = () => {
               <div className="flex gap-1 mb-3">
                 {[...Array(t.rating || 5)].map((_, j) => <Star key={j} size={14} className="text-gold-400" fill="currentColor" />)}
               </div>
-              <p className="text-purple-200 text-sm leading-relaxed mb-5">"{t.message}"</p>
+              <p className="text-purple-200 text-md leading-relaxed mb-5">"{t.message}"</p>
               <div className="flex items-center gap-3 pt-3 border-t border-purple-900/30">
-                <div className="w-9 h-9 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-sm">
+                <div className="w-9 h-9 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-md">
                   {t.client_name[0]}
                 </div>
-                <span className="text-white font-display font-semibold text-sm">{t.client_name}</span>
+                <span className="text-white font-display font-semibold text-md">{t.client_name}</span>
               </div>
             </motion.div>
           ))}
@@ -76,8 +76,8 @@ export const ProjectsPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent" />
               </div>
               <div className="p-4 bg-dark-800/60">
-                <h3 className="font-display font-bold text-white text-sm mb-1">{p.title}</h3>
-                <p className="text-purple-400 text-xs">{p.description || 'Music production project'}</p>
+                <h3 className="font-display font-bold text-white text-md mb-1">{p.title}</h3>
+                <p className="text-purple-400 text-md">{p.description || 'Music production project'}</p>
               </div>
             </motion.div>
           ))}
@@ -117,7 +117,7 @@ export const ServicesPage = () => {
               <div className="md:w-3/5 p-8 flex flex-col justify-center">
                 <h3 className="font-display font-bold text-2xl text-white mb-3">{title}</h3>
                 <p className="text-purple-300 leading-relaxed mb-5">{desc}</p>
-                <a href="/contact" className="btn-outline self-start text-sm">Book Now →</a>
+                <a href="/contact" className="btn-outline self-start text-md">Book Now →</a>
               </div>
             </motion.div>
           ))}
@@ -162,7 +162,7 @@ export const AboutPage = () => (
               <Star size={20} className="text-dark-950" fill="currentColor" />
             </div>
             <h3 className="font-display font-bold text-xl text-white mb-2">{v}</h3>
-            <p className="text-purple-400 text-sm">We are committed to {v.toLowerCase()} in every project we undertake.</p>
+            <p className="text-purple-400 text-md">We are committed to {v.toLowerCase()} in every project we undertake.</p>
           </motion.div>
         ))}
       </div>

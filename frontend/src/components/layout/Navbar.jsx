@@ -45,7 +45,7 @@ const Navbar = () => {
               <Music size={18} className="text-white" />
             </div>
             <div className="leading-tight">
-              <p className="font-display font-bold text-white text-sm leading-none">Delight</p>
+              <p className="font-display font-bold text-white text-md leading-none">Delight</p>
               <p className="font-display text-gold-400 text-[11px] tracking-wider uppercase">Music Studio</p>
             </div>
           </Link>
@@ -54,7 +54,7 @@ const Navbar = () => {
           <nav className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map(({ to, label }) => (
               <Link key={to} to={to}
-                className={`px-4 py-2 rounded-lg font-display font-semibold text-sm transition-all ${
+                className={`px-4 py-2 rounded-lg font-display font-semibold text-md transition-all ${
                   location.pathname === to
                     ? 'text-gold-400 bg-gold-500/10'
                     : 'text-purple-200 hover:text-white hover:bg-white/5'
@@ -67,12 +67,12 @@ const Navbar = () => {
           {/* CTA */}
           <div className="hidden lg:flex items-center gap-3">
             {isAuthenticated ? (
-              <button onClick={() => navigate(dashPath)} className="btn-gold text-sm px-5 py-2.5">
+              <button onClick={() => navigate(dashPath)} className="btn-gold text-md px-5 py-2.5">
                 Dashboard
               </button>
             ) : (
-              <Link to="/login" className="btn-outline text-sm px-5 py-2.5">
-                <LogIn size={15} /> Sign In
+              <Link to="/login" className="btn-outline text-md px-5 py-2.5">
+                <LogIn size={18} /> Sign In
               </Link>
             )}
           </div>
@@ -94,7 +94,7 @@ const Navbar = () => {
             <div className="px-4 py-4 space-y-1">
               {NAV_LINKS.map(({ to, label }) => (
                 <Link key={to} to={to}
-                  className={`block px-4 py-3 rounded-xl font-display font-semibold text-sm transition-all ${
+                  className={`block px-4 py-3 rounded-xl font-display font-semibold text-md transition-all ${
                     location.pathname === to
                       ? 'text-gold-400 bg-gold-500/10'
                       : 'text-purple-200 hover:text-white hover:bg-white/5'
@@ -104,12 +104,12 @@ const Navbar = () => {
               ))}
               <div className="pt-2">
                 {isAuthenticated ? (
-                  <button onClick={() => navigate(dashPath)} className="btn-gold w-full justify-center text-sm">
+                  <button onClick={() => navigate(dashPath)} className="btn-gold w-full justify-center text-md">
                     Go to Dashboard
                   </button>
                 ) : (
-                  <Link to="/login" className="btn-outline w-full justify-center text-sm">
-                    <LogIn size={15} /> Sign In
+                  <Link to="/login" className="btn-outline w-full justify-center text-md">
+                    <LogIn size={18} /> Sign In
                   </Link>
                 )}
               </div>

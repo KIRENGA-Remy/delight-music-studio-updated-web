@@ -59,7 +59,7 @@ const DashboardSidebar = () => {
               <Music size={15} className="text-white" />
             </div>
             <div>
-              <p className="font-display font-bold text-white text-xs leading-none">Delight</p>
+              <p className="font-display font-bold text-white text-md leading-none">Delight</p>
               <p className="text-gold-400 text-[10px] font-display tracking-wider">MUSIC STUDIO</p>
             </div>
           </div>
@@ -74,11 +74,11 @@ const DashboardSidebar = () => {
       {!collapsed && (
         <div className="mx-3 mt-4 p-3 rounded-xl bg-purple-900/20 border border-purple-800/30">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-sm flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-md flex-shrink-0">
               {user?.fullname?.[0]}
             </div>
             <div className="min-w-0">
-              <p className="font-display font-semibold text-white text-xs truncate">{user?.fullname}</p>
+              <p className="font-display font-semibold text-white text-md truncate">{user?.fullname}</p>
               <p className={`text-[10px] font-display font-bold uppercase tracking-wider ${roleColor}`}>{user?.role}</p>
             </div>
           </div>

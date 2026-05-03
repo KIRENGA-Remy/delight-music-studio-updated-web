@@ -53,8 +53,8 @@ export default function ContactPage() {
                   <Icon size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-purple-400 text-xs font-display font-semibold uppercase tracking-wider">{label}</p>
-                  <p className="text-white text-sm mt-1">{value}</p>
+                  <p className="text-purple-400 text-md font-display font-semibold uppercase tracking-wider">{label}</p>
+                  <p className="text-white text-md mt-1">{value}</p>
                 </div>
               </div>
             ))}
@@ -62,8 +62,8 @@ export default function ContactPage() {
             <div className="rounded-2xl overflow-hidden border border-purple-900/30 h-52 bg-dark-800/60 flex items-center justify-center">
               <div className="text-center text-purple-500">
                 <MapPin size={32} className="mx-auto mb-2 text-gold-400" />
-                <p className="text-sm">Kigali, Rwanda</p>
-                <p className="text-xs mt-1">Gisozi, KG 15 Ave</p>
+                <p className="text-md">Kigali, Rwanda</p>
+                <p className="text-sm mt-1">Gisozi, KG 15 Ave</p>
               </div>
             </div>
           </div>

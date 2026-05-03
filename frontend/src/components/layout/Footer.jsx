@@ -13,11 +13,11 @@ const Footer = () => (
               <Music size={18} className="text-white" />
             </div>
             <div>
-              <p className="font-display font-bold text-white text-sm">Delight Music</p>
+              <p className="font-display font-bold text-white text-md">Delight Music</p>
               <p className="text-gold-400 text-[10px] font-display tracking-wider">STUDIO CENTER</p>
             </div>
           </div>
-          <p className="text-purple-300 text-sm leading-relaxed mb-5">
+          <p className="text-purple-300 text-md leading-relaxed mb-5">
             Rwanda's premier music production studio, empowering artists and creators since 2019.
           </p>
           <div className="flex items-center gap-3">
@@ -38,12 +38,12 @@ const Footer = () => (
 
         {/* Quick Links */}
         <div>
-          <h4 className="font-display font-bold text-white mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
+          <h4 className="font-display font-bold text-white mb-4 text-md uppercase tracking-wider">Quick Links</h4>
           <ul className="space-y-2.5">
             {[['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services'],
               ['/projects', 'Projects'], ['/testimonials', 'Testimonials'], ['/contact', 'Contact']].map(([to, label]) => (
               <li key={to}>
-                <Link to={to} className="text-purple-300 hover:text-gold-400 text-sm transition-colors">{label}</Link>
+                <Link to={to} className="text-purple-300 hover:text-gold-400 text-md transition-colors">{label}</Link>
               </li>
             ))}
           </ul>
@@ -51,8 +51,8 @@ const Footer = () => (
 
         {/* Services */}
         <div>
-          <h4 className="font-display font-bold text-white mb-4 text-sm uppercase tracking-wider">Services</h4>
-          <ul className="space-y-2.5 text-sm text-purple-300">
+          <h4 className="font-display font-bold text-white mb-4 text-md uppercase tracking-wider">Services</h4>
+          <ul className="space-y-2.5 text-md text-purple-300">
             {['Audio Production', 'Vocal Training', 'Choir Coaching', 'Piano Lessons',
               'Guitar Lessons', 'Drum Lessons', 'Website Development', 'Sonorization'].map(s => (
               <li key={s} className="hover:text-gold-400 transition-colors cursor-pointer">{s}</li>
@@ -62,8 +62,8 @@ const Footer = () => (
 
         {/* Contact */}
         <div>
-          <h4 className="font-display font-bold text-white mb-4 text-sm uppercase tracking-wider">Contact</h4>
-          <ul className="space-y-3 text-sm">
+          <h4 className="font-display font-bold text-white mb-4 text-md uppercase tracking-wider">Contact</h4>
+          <ul className="space-y-3 text-md">
             <li className="flex items-start gap-2.5 text-purple-300">
               <MapPin size={15} className="text-gold-400 mt-0.5 flex-shrink-0" />
               Kigali, Rwanda — Gisozi, KG 15 Ave
@@ -80,9 +80,8 @@ const Footer = () => (
         </div>
       </div>
 
-      <div className="border-t border-purple-900/30 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-purple-400 text-xs">© 2025 Delight Music Studio Center. All rights reserved.</p>
-        <p className="text-purple-500 text-xs">Built with ❤️ in Rwanda</p>
+      <div className="border-t border-purple-900/30 mt-10 pt-6">
+        <p className="text-purple-400 text-md">© 2025 Delight Music Studio Center. All rights reserved.</p>
       </div>
     </div>
   </footer>

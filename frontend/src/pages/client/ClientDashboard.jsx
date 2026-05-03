@@ -51,9 +51,9 @@ export default function ClientDashboard() {
         ].map(({ label, value, icon: Icon, color }, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="stat-card">
-            <Icon size={20} className={`${color} mb-2`} />
+            <Icon size={24} className={`${color} mb-2`} />
             <p className="font-display font-bold text-2xl text-white">{value}</p>
-            <p className="text-purple-400 text-xs mt-0.5 font-display">{label}</p>
+            <p className="text-purple-400 text-md mt-0.5 font-display">{label}</p>
           </motion.div>
         ))}
       </div>
@@ -62,7 +62,7 @@ export default function ClientDashboard() {
       <div className="flex gap-2 mb-5">
         {['projects', 'vault', 'certificates'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-5 py-2 rounded-xl font-display font-semibold text-sm capitalize transition-all ${
+            className={`px-5 py-2 rounded-xl font-display font-semibold text-md capitalize transition-all ${
               tab === t ? 'bg-purple-gradient text-white shadow-purple' : 'card-dark text-purple-300 hover:text-white'
             }`}>{t}</button>
         ))}
@@ -90,12 +90,12 @@ export default function ClientDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <cfg.icon size={15} className={cfg.color} />
-                          <h3 className="font-display font-bold text-white text-base truncate">{project.title}</h3>
+                          <h3 className="font-display font-bold text-white text-lg truncate">{project.title}</h3>
                         </div>
                         {project.description && (
-                          <p className="text-purple-400 text-xs leading-relaxed mb-2 line-clamp-2">{project.description}</p>
+                          <p className="text-purple-400 text-md leading-relaxed mb-2 line-clamp-2">{project.description}</p>
                         )}
-                        <div className="flex items-center gap-4 text-xs">
+                        <div className="flex items-center gap-4 text-md">
                           <span className={cfg.badge}>{cfg.label}</span>
                           {project.producer_name && (
                             <span className="text-purple-400">Producer: <span className="text-purple-300">{project.producer_name}</span></span>
@@ -106,8 +106,8 @@ export default function ClientDashboard() {
                         </div>
                       </div>
                       <button onClick={() => loadAssets(project.id)}
-                        className="btn-outline text-xs px-3 py-1.5 flex-shrink-0">
-                        <Download size={12} /> Files
+                        className="btn-outline text-md px-3 py-1.5 flex-shrink-0">
+                        <Download size={16} /> Files
                       </button>
                     </div>
                     <ProgressBar value={project.progress_percentage || 0} label="Progress" />
@@ -139,14 +139,14 @@ export default function ClientDashboard() {
                       <Music2 size={16} className="text-white" />
                     </div>
                     <div>
-                      <p className="text-white text-sm font-display font-semibold">{asset.file_url.split('/').pop()}</p>
-                      <p className="text-purple-400 text-xs capitalize">{asset.file_type} · {asset.uploader_name}</p>
+                      <p className="text-white text-lg font-display font-semibold">{asset.file_url.split('/').pop()}</p>
+                      <p className="text-purple-400 text-md capitalize">{asset.file_type} · {asset.uploader_name}</p>
                     </div>
                   </div>
                   <a href={`https://delightmusicstudio.onrender.com${asset.file_url}`}
                     download target="_blank" rel="noreferrer"
-                    className="btn-gold text-xs px-4 py-2 flex-shrink-0">
-                    <Download size={13} /> Download
+                    className="btn-gold text-md px-4 py-2 flex-shrink-0">
+                    <Download size={18} /> Download
                   </a>
                 </motion.div>
               ))}
@@ -165,18 +165,18 @@ export default function ClientDashboard() {
                   className="card-dark p-5 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gold-gradient flex items-center justify-center">
-                      <Award size={18} className="text-dark-950" />
+                      <Award size={24} className="text-dark-950" />
                     </div>
                     <div>
-                      <p className="text-white font-display font-bold text-sm">Certificate of Completion</p>
-                      <p className="text-purple-400 text-xs">{cert.issued_date ? new Date(cert.issued_date).toLocaleDateString() : 'Date not set'}</p>
+                      <p className="text-white font-display font-bold text-lg">Certificate of Completion</p>
+                      <p className="text-purple-400 text-md">{cert.issued_date ? new Date(cert.issued_date).toLocaleDateString() : 'Date not set'}</p>
                     </div>
                   </div>
                   {cert.certificate_url && (
                     <a href={`https://delightmusicstudio.onrender.com${cert.certificate_url}`}
                       download target="_blank" rel="noreferrer"
-                      className="btn-gold text-xs px-4 py-2">
-                      <Download size={13} /> Download
+                      className="btn-gold text-md px-4 py-2">
+                      <Download size={18} /> Download
                     </a>
                   )}
                 </motion.div>

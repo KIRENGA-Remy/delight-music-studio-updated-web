@@ -49,7 +49,7 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/10 border border-gold-500/30 mb-6">
             <Star size={14} className="text-gold-400" fill="currentColor" />
-            <span className="text-gold-400 text-xs font-display font-bold tracking-wider uppercase">Rwanda's Premier Music Studio</span>
+            <span className="text-gold-400 text-md font-display font-bold tracking-wider uppercase">Rwanda's Premier Music Studio</span>
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
             className="font-display font-bold text-5xl md:text-7xl leading-tight mb-6">
@@ -63,11 +63,11 @@ export default function HomePage() {
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="btn-gold text-base px-8 py-4 justify-center">
-              Start Your Journey <ArrowRight size={18} />
+            <Link to="/contact" className="btn-gold text-lg px-8 py-4 justify-center">
+              Start Your Journey <ArrowRight size={24} />
             </Link>
-            <Link to="/projects" className="btn-outline text-base px-8 py-4 justify-center">
-              <Play size={16} fill="currentColor" /> Listen to Our Work
+            <Link to="/projects" className="btn-outline text-lg px-8 py-4 justify-center">
+              <Play size={18} fill="currentColor" /> Listen to Our Work
             </Link>
           </motion.div>
         </div>
@@ -86,7 +86,7 @@ export default function HomePage() {
             {STATS.map(({ value, label }, i) => (
               <motion.div key={i} {...FADE_UP} transition={{ delay: i * 0.1 }} className="text-center">
                 <p className="font-display font-bold text-4xl gradient-text mb-1">{value}</p>
-                <p className="text-purple-300 text-sm">{label}</p>
+                <p className="text-purple-300 text-md">{label}</p>
               </motion.div>
             ))}
           </div>
@@ -113,10 +113,10 @@ export default function HomePage() {
                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 group-hover:shadow-purple transition-shadow`}>
                   <Icon size={20} className="text-white" />
                 </div>
-                <h3 className="font-display font-bold text-white mb-2 text-sm">{title}</h3>
-                <p className="text-purple-400 text-xs leading-relaxed">{desc}</p>
-                <div className="mt-4 flex items-center gap-1 text-gold-400 text-xs font-display font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                  Learn more <ChevronRight size={13} />
+                <h3 className="font-display font-bold text-white mb-2 text-md">{title}</h3>
+                <p className="text-purple-400 text-md leading-relaxed">{desc}</p>
+                <div className="mt-4 flex items-center gap-1 text-gold-400 text-md font-display font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  Learn more <ChevronRight size={18} />
                 </div>
               </motion.div>
             ))}
@@ -162,8 +162,8 @@ export default function HomePage() {
                       <Star key={j} size={14} className="text-gold-400" fill="currentColor" />
                     ))}
                   </div>
-                  <p className="text-purple-200 text-sm leading-relaxed mb-4">"{t.message}"</p>
-                  <p className="text-white font-display font-bold text-sm">— {t.client_name}</p>
+                  <p className="text-purple-200 text-md leading-relaxed mb-4">"{t.message}"</p>
+                  <p className="text-white font-display font-bold text-md">— {t.client_name}</p>
                 </motion.div>
               ))}
             </div>

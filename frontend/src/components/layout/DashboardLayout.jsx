@@ -13,15 +13,15 @@ const DashboardLayout = ({ children, title, subtitle }) => {
         <header className="bg-dark-950/80 backdrop-blur-md border-b border-purple-900/30 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
           <div>
             <h1 className="font-display font-bold text-xl text-white">{title}</h1>
-            {subtitle && <p className="text-sm text-purple-300 mt-0.5">{subtitle}</p>}
+            {subtitle && <p className="text-md text-purple-300 mt-0.5">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-3">
             <NotificationBell />
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-purple-900/20 border border-purple-800/30">
-              <div className="w-6 h-6 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-xs">
+              <div className="w-6 h-6 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-md">
                 {user?.fullname?.[0]}
               </div>
-              <span className="text-white text-sm font-display font-semibold hidden sm:block">{user?.fullname}</span>
+              <span className="text-white text-md font-display font-semibold hidden sm:block">{user?.fullname}</span>
             </div>
           </div>
         </header>

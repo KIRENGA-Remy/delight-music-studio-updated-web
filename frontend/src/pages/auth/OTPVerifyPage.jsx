@@ -60,7 +60,7 @@ export default function OTPVerifyPage() {
             <ShieldCheck size={28} className="text-dark-950" />
           </div>
           <h1 className="font-display font-bold text-3xl text-white">Activate Account</h1>
-          <p className="text-purple-300 text-sm mt-1">Enter the OTP sent by the studio manager</p>
+          <p className="text-purple-300 text-md mt-1">Enter the OTP sent by the studio manager</p>
         </div>
 
         <div className="glass p-8">
@@ -91,7 +91,7 @@ export default function OTPVerifyPage() {
               <input value={password} onChange={e => setPassword(e.target.value)}
                 type="password" placeholder="Create a secure password"
                 className="input-dark" autoComplete="new-password" />
-              <p className="text-xs text-purple-500 mt-1">This will become your login password</p>
+              <p className="text-md text-purple-500 mt-1">This will become your login password</p>
             </div>
 
             <button type="submit" disabled={loading} className="btn-gold w-full justify-center py-3">

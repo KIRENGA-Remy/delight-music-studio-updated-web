@@ -48,20 +48,20 @@ const NotificationBell = () => {
       {open && (
         <div className="absolute right-0 mt-2 w-80 bg-dark-900 border border-purple-800/40 rounded-2xl shadow-2xl z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-purple-900/40 flex items-center justify-between">
-            <span className="font-display font-bold text-white text-sm">Notifications</span>
+            <span className="font-display font-bold text-white text-md">Notifications</span>
             {unread > 0 && <span className="badge-gold">{unread} new</span>}
           </div>
           <div className="max-h-80 overflow-y-auto">
             {notifs.length === 0 ? (
-              <p className="text-center text-purple-400 text-sm py-8">No notifications yet</p>
+              <p className="text-center text-purple-400 text-md py-8">No notifications yet</p>
             ) : notifs.map(n => (
               <div key={n.id} onClick={() => markRead(n.id)}
                 className={`px-4 py-3 border-b border-purple-900/20 cursor-pointer hover:bg-purple-900/10 transition-colors ${!n.is_read ? 'bg-purple-900/10' : ''}`}>
                 <div className="flex items-start gap-3">
                   {!n.is_read && <span className="w-2 h-2 rounded-full bg-gold-400 mt-1.5 flex-shrink-0" />}
                   <div className="flex-1">
-                    <p className="text-sm text-white leading-snug">{n.message}</p>
-                    <p className="text-xs text-purple-400 mt-1">{n.sender_name} · {new Date(n.created_at).toLocaleDateString()}</p>
+                    <p className="text-md text-white leading-snug">{n.message}</p>
+                    <p className="text-sm text-purple-400 mt-1">{n.sender_name} · {new Date(n.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>

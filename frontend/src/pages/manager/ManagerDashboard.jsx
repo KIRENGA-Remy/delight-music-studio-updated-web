@@ -60,9 +60,9 @@ export default function ManagerDashboard() {
   };
 
   const STAT_CARDS = data ? [
-    { label: 'Total Users',       value: data.total_users,        icon: Users,         color: 'text-purple-400', bg: 'bg-purple-500/10' },
+    { label: 'Total Users',       value: data.total_users,        icon: Users,         color: 'text-purple-400', bg: 'bg-purple-700/10' },
     { label: 'Active Projects',   value: data.active_projects,    icon: FolderKanban,  color: 'text-gold-400',   bg: 'bg-gold-500/10' },
-    { label: 'Pending Leads',     value: data.pending_leads,      icon: TrendingUp,    color: 'text-blue-400',   bg: 'bg-blue-500/10' },
+    { label: 'Pending Partner Requests', value: data.pending_leads, icon: TrendingUp,  color: 'text-blue-400',   bg: 'bg-blue-500/10' },
     { label: 'Revenue (RWF)',     value: `${Number(data.total_revenue||0).toLocaleString()}`, icon: DollarSign, color: 'text-green-400', bg: 'bg-green-500/10' },
   ] : [];
 
@@ -71,7 +71,7 @@ export default function ManagerDashboard() {
     in_progress: 'badge-purple', completed: 'badge-green', cancelled: 'badge-red', pending_status: 'badge-gold',
   }[s] || 'badge-gold');
 
-  const TABS = ['overview', 'leads', 'pipeline', 'users'];
+  const TABS = ['overview', 'Partner Requests', 'pipeline', 'users'];
 
   return (
     <DashboardLayout title="Manager Dashboard" subtitle="Studio overview and management">
@@ -80,15 +80,15 @@ export default function ManagerDashboard() {
       <div className="flex gap-2 mb-6 flex-wrap">
         {TABS.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-5 py-2 rounded-xl font-display font-semibold text-sm capitalize transition-all ${
-              activeTab === t ? 'bg-purple-gradient text-white shadow-purple' : 'card-dark text-purple-300 hover:text-white'
+            className={`px-5 py-2 rounded-xl font-display font-semibold text-lg capitalize transition-all ${
+              activeTab === t ? 'bg-purple-gradient text-white' : 'card-dark text-purple-300 hover:text-white'
             }`}>
             {t}
           </button>
         ))}
         <button onClick={() => setModal(true)}
-          className="btn-gold ml-auto text-sm px-5 py-2">
-          <UserPlus size={15} /> New User
+          className="btn-gold ml-auto text-lg px-5 py-2">
+          <UserPlus size={24} /> New User
         </button>
       </div>
 
@@ -106,11 +106,11 @@ export default function ManagerDashboard() {
                   <motion.div key={i} {...FADE} transition={{ delay: i * 0.08 }} className="stat-card">
                     <div className="flex items-start justify-between mb-3">
                       <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
-                        <Icon size={18} className={color} />
+                        <Icon size={24} className={color} />
                       </div>
                     </div>
-                    <p className="font-display font-bold text-2xl text-white">{value}</p>
-                    <p className="text-purple-400 text-xs mt-1 uppercase tracking-wide font-display">{label}</p>
+                    <p className="font-display font-bold text-3xl text-white">{value}</p>
+                    <p className="text-purple-400 text-md mt-1 uppercase tracking-wide font-display">{label}</p>
                   </motion.div>
                 ))}
               </div>
@@ -118,17 +118,17 @@ export default function ManagerDashboard() {
               {/* Producers pipeline */}
               {data?.producers?.length > 0 && (
                 <div className="card-dark p-5">
-                  <h3 className="font-display font-bold text-white mb-4 flex items-center gap-2">
-                    <FolderKanban size={16} className="text-gold-400" /> Producer Pipeline
+                  <h3 className="font-display font-bold text-white text-xl mb-4 flex items-center gap-2">
+                    <FolderKanban size={24} className="text-gold-400" />Producer Pipeline
                   </h3>
                   <div className="space-y-4">
                     {data.producers.map(p => (
                       <div key={p.id} className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-xs flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-md flex-shrink-0">
                           {p.fullname[0]}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex justify-between text-xs mb-1">
+                          <div className="flex justify-between text-md mb-1">
                             <span className="text-white font-display font-semibold truncate">{p.fullname}</span>
                             <span className="text-purple-400 flex-shrink-0 ml-2">{p.project_count} projects</span>
                           </div>
@@ -144,23 +144,23 @@ export default function ManagerDashboard() {
               {data?.recent_projects?.length > 0 && (
                 <div className="card-dark overflow-hidden">
                   <div className="px-5 py-4 border-b border-purple-900/30 flex items-center justify-between">
-                    <h3 className="font-display font-bold text-white">Recent Projects</h3>
+                    <h3 className="font-display font-bold text-xl text-white">Recent Projects</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead><tr>
                         {['Title','Client','Producer','Status','Progress'].map(h => (
-                          <th key={h} className="px-4 py-3 text-left text-xs font-display font-bold text-purple-400 uppercase tracking-wider border-b border-purple-900/30">{h}</th>
+                          <th key={h} className="px-4 py-3 text-left text-md font-display font-bold text-purple-400 uppercase tracking-wider border-b border-purple-900/30">{h}</th>
                         ))}
                       </tr></thead>
                       <tbody>
                         {data.recent_projects.map(p => (
                           <tr key={p.id} className="border-b border-purple-900/20 hover:bg-purple-900/10 transition-colors">
-                            <td className="px-4 py-3 text-white text-sm font-medium">{p.title}</td>
-                            <td className="px-4 py-3 text-purple-300 text-sm">{p.client_name}</td>
-                            <td className="px-4 py-3 text-purple-300 text-sm">{p.producer_name}</td>
+                            <td className="px-4 py-3 text-white text-md font-medium">{p.title}</td>
+                            <td className="px-4 py-3 text-purple-300 text-md">{p.client_name}</td>
+                            <td className="px-4 py-3 text-purple-300 text-md">{p.producer_name}</td>
                             <td className="px-4 py-3"><span className={statusBadge(p.status)}>{p.status}</span></td>
-                            <td className="px-4 py-3 min-w-32"><ProgressBar value={p.progress_percentage} size="sm" /></td>
+                            <td className="px-4 py-3 min-w-32"><ProgressBar value={p.progress_percentage} size="md" /></td>
                           </tr>
                         ))}
                       </tbody>
@@ -172,7 +172,7 @@ export default function ManagerDashboard() {
           )}
 
           {/* LEADS */}
-          {activeTab === 'leads' && (
+          {activeTab === 'Partner Requests' && (
             <div className="card-dark overflow-hidden">
               <div className="px-5 py-4 border-b border-purple-900/30">
                 <h3 className="font-display font-bold text-white">Partner Requests ({leads.length})</h3>
@@ -181,33 +181,33 @@ export default function ManagerDashboard() {
                 <table className="w-full">
                   <thead><tr>
                     {['Name','Email','Phone','Message','Status','Actions'].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-display font-bold text-purple-400 uppercase tracking-wider border-b border-purple-900/30">{h}</th>
+                      <th key={h} className="px-4 py-3 text-left text-md font-display font-bold text-purple-400 uppercase tracking-wider border-b border-purple-900/30">{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
                     {leads.map(lead => (
                       <tr key={lead.id} className="border-b border-purple-900/20 hover:bg-purple-900/10 transition-colors">
-                        <td className="px-4 py-3 text-white text-sm font-medium">{lead.fullname}</td>
-                        <td className="px-4 py-3 text-purple-300 text-xs">{lead.email}</td>
-                        <td className="px-4 py-3 text-purple-300 text-xs">{lead.phone || '—'}</td>
-                        <td className="px-4 py-3 text-purple-400 text-xs max-w-48 truncate">{lead.message || '—'}</td>
+                        <td className="px-4 py-3 text-white text-md font-medium">{lead.fullname}</td>
+                        <td className="px-4 py-3 text-purple-300 text-md">{lead.email}</td>
+                        <td className="px-4 py-3 text-purple-300 text-md">{lead.phone || '—'}</td>
+                        <td className="px-4 py-3 text-purple-400 text-md max-w-48 truncate">{lead.message || '—'}</td>
                         <td className="px-4 py-3"><span className={statusBadge(lead.status)}>{lead.status}</span></td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
                             {lead.status === 'pending' && (
                               <button onClick={() => updateLeadStatus(lead.id, 'contacted')}
-                                className="text-xs btn-outline py-1 px-2.5">Contacted</button>
+                                className="text-md btn-outline py-1 px-2.5">Contacted</button>
                             )}
                             {lead.status !== 'converted' && (
                               <button onClick={() => updateLeadStatus(lead.id, 'converted')}
-                                className="text-xs px-2.5 py-1 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg hover:bg-green-500/20 transition-all">Convert</button>
+                                className="text-md px-2.5 py-1 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg hover:bg-green-500/20 transition-all">Convert</button>
                             )}
                           </div>
                         </td>
                       </tr>
                     ))}
                     {leads.length === 0 && (
-                      <tr><td colSpan={6} className="px-4 py-12 text-center text-purple-500 text-sm">No leads yet</td></tr>
+                      <tr><td colSpan={6} className="px-4 py-12 text-center text-purple-500 text-md">No leads yet</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -220,15 +220,15 @@ export default function ManagerDashboard() {
             <div className="card-dark overflow-hidden">
               <div className="px-5 py-4 border-b border-purple-900/30 flex items-center justify-between">
                 <h3 className="font-display font-bold text-white">All Users ({users.length})</h3>
-                <button onClick={() => setModal(true)} className="btn-gold text-xs px-4 py-2">
-                  <Plus size={13} /> Add User
+                <button onClick={() => setModal(true)} className="btn-gold text-md px-4 py-2">
+                  <Plus size={18} /> Add User
                 </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead><tr>
                     {['Name','Email/Phone','Role','Type','Joined'].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-display font-bold text-purple-400 uppercase tracking-wider border-b border-purple-900/30">{h}</th>
+                      <th key={h} className="px-4 py-3 text-left text-md font-display font-bold text-purple-400 uppercase tracking-wider border-b border-purple-900/30">{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
@@ -236,20 +236,20 @@ export default function ManagerDashboard() {
                       <tr key={u.id} className="border-b border-purple-900/20 hover:bg-purple-900/10 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-xs flex-shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-purple-gradient flex items-center justify-center font-display font-bold text-white text-md flex-shrink-0">
                               {u.fullname[0]}
                             </div>
-                            <span className="text-white text-sm font-medium">{u.fullname}</span>
+                            <span className="text-white text-md font-medium">{u.fullname}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-purple-300 text-xs">{u.email || u.phone}</td>
+                        <td className="px-4 py-3 text-purple-300 text-md">{u.email || u.phone}</td>
                         <td className="px-4 py-3"><span className={u.role === 'producer' ? 'badge-purple' : 'badge-gold'}>{u.role}</span></td>
-                        <td className="px-4 py-3 text-purple-400 text-xs capitalize">{u.client_type || '—'}</td>
-                        <td className="px-4 py-3 text-purple-500 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-purple-400 text-md capitalize">{u.client_type || '—'}</td>
+                        <td className="px-4 py-3 text-purple-500 text-md">{new Date(u.created_at).toLocaleDateString()}</td>
                       </tr>
                     ))}
                     {users.length === 0 && (
-                      <tr><td colSpan={5} className="px-4 py-12 text-center text-purple-500 text-sm">No users yet</td></tr>
+                      <tr><td colSpan={5} className="px-4 py-12 text-center text-purple-500 text-md">No users yet</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -262,7 +262,7 @@ export default function ManagerDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {['pending', 'in_progress', 'completed'].map(status => (
                 <div key={status} className="card-dark p-4">
-                  <h3 className="font-display font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-md uppercase tracking-wider mb-4 flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${status === 'pending' ? 'bg-gold-400' : status === 'in_progress' ? 'bg-purple-400' : 'bg-green-400'}`} />
                     <span className="text-white">{status.replace('_', ' ')}</span>
                     <span className="badge-gray ml-auto">
@@ -272,13 +272,13 @@ export default function ManagerDashboard() {
                   <div className="space-y-3">
                     {data?.recent_projects?.filter(p => p.status === status).map(p => (
                       <div key={p.id} className="bg-dark-800/60 border border-purple-900/20 rounded-xl p-3">
-                        <p className="text-white font-display font-semibold text-sm mb-1">{p.title}</p>
-                        <p className="text-purple-400 text-xs mb-2">{p.client_name}</p>
-                        <ProgressBar value={p.progress_percentage} size="sm" />
+                        <p className="text-white font-display font-semibold text-md mb-1">{p.title}</p>
+                        <p className="text-purple-400 text-md mb-2">{p.client_name}</p>
+                        <ProgressBar value={p.progress_percentage} size="md" />
                       </div>
                     ))}
                     {(data?.recent_projects?.filter(p => p.status === status).length || 0) === 0 && (
-                      <p className="text-purple-600 text-xs text-center py-4">No projects</p>
+                      <p className="text-purple-600 text-md text-center py-4">No projects</p>
                     )}
                   </div>
                 </div>

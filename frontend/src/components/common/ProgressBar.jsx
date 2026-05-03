@@ -5,7 +5,7 @@ const ProgressBar = ({ value = 0, label, color = 'purple', size = 'md' }) => {
   return (
     <div>
       {label && (
-        <div className="flex justify-between text-xs mb-1.5">
+        <div className="flex justify-between text-sm mb-1.5">
           <span className="text-purple-300 font-display">{label}</span>
           <span className="text-gold-400 font-bold">{value}%</span>
         </div>
