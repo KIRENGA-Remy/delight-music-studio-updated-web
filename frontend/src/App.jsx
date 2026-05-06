@@ -13,10 +13,37 @@ import { TestimonialsPage, ProjectsPage, ServicesPage, AboutPage } from './pages
 import LoginPage     from './pages/auth/LoginPage';
 import OTPVerifyPage from './pages/auth/OTPVerifyPage';
 
-// Dashboards
-import ManagerDashboard  from './pages/manager/ManagerDashboard';
-import ProducerDashboard from './pages/producer/ProducerDashboard';
-import ClientDashboard   from './pages/client/ClientDashboard';
+// Shared pages (all roles)
+import MessagesPage from './pages/shared/MessagesPage';
+import AssetsPage   from './pages/shared/AssetsPage';
+
+// Manager dashboard pages
+import ManagerDashboard        from './pages/manager/ManagerDashboard';
+import ManagerLeadsPage        from './pages/manager/LeadsPage';
+import ManagerPipelinePage     from './pages/manager/PipelinePage';
+import ManagerFinancialsPage   from './pages/manager/FinancialsPage';
+import ManagerCertificatesPage from './pages/manager/CertificatesPage';
+import ManagerCalendarPage     from './pages/manager/CalendarPage';
+import ContentCMSPage          from './pages/manager/ContentCMSPage';
+
+// Producer dashboard pages
+import ProducerDashboard    from './pages/producer/ProducerDashboard';
+import ProducerTasksPage    from './pages/producer/TasksPage';
+import ProducerUploadPage   from './pages/producer/UploadPage';
+import ProducerEarningsPage from './pages/producer/EarningsPage';
+import ProducerCalendarPage from './pages/producer/CalendarPage';
+
+// Client dashboard pages
+import ClientDashboard        from './pages/client/ClientDashboard';
+import ClientProjectsPage     from './pages/client/ProjectsPage';
+import ClientVaultPage        from './pages/client/VaultPage';
+import ClientCertificatesPage from './pages/client/CertificatesPage';
+import ClientCalendarPage     from './pages/client/CalendarPage';
+
+const MGR = (el) => <ProtectedRoute roles={['manager']}>{el}</ProtectedRoute>;
+const PRD = (el) => <ProtectedRoute roles={['producer']}>{el}</ProtectedRoute>;
+const CLI = (el) => <ProtectedRoute roles={['client']}>{el}</ProtectedRoute>;
+const ANY = (el) => <ProtectedRoute roles={['manager','producer','client']}>{el}</ProtectedRoute>;
 
 export default function App() {
   return (
@@ -49,17 +76,33 @@ export default function App() {
           <Route path="/login"      element={<LoginPage />} />
           <Route path="/otp-verify" element={<OTPVerifyPage />} />
 
-          {/* Manager */}
-          <Route path="/dashboard/manager"  element={<ProtectedRoute roles={['manager']}><ManagerDashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/manager/*" element={<ProtectedRoute roles={['manager']}><ManagerDashboard /></ProtectedRoute>} />
+          {/* MANAGER */}
+          <Route path="/dashboard/manager"              element={MGR(<ManagerDashboard />)} />
+          <Route path="/dashboard/manager/leads"        element={MGR(<ManagerLeadsPage />)} />
+          <Route path="/dashboard/manager/pipeline"     element={MGR(<ManagerPipelinePage />)} />
+          <Route path="/dashboard/manager/financials"   element={MGR(<ManagerFinancialsPage />)} />
+          <Route path="/dashboard/manager/certificates" element={MGR(<ManagerCertificatesPage />)} />
+          <Route path="/dashboard/manager/calendar"     element={MGR(<ManagerCalendarPage />)} />
+          <Route path="/dashboard/manager/content"      element={MGR(<ContentCMSPage />)} />
+          <Route path="/dashboard/manager/messages"     element={MGR(<MessagesPage />)} />
+          <Route path="/dashboard/manager/assets"       element={MGR(<AssetsPage />)} />
 
-          {/* Producer */}
-          <Route path="/dashboard/producer"  element={<ProtectedRoute roles={['producer']}><ProducerDashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/producer/*" element={<ProtectedRoute roles={['producer']}><ProducerDashboard /></ProtectedRoute>} />
+          {/* PRODUCER */}
+          <Route path="/dashboard/producer"            element={PRD(<ProducerDashboard />)} />
+          <Route path="/dashboard/producer/tasks"      element={PRD(<ProducerTasksPage />)} />
+          <Route path="/dashboard/producer/upload"     element={PRD(<ProducerUploadPage />)} />
+          <Route path="/dashboard/producer/earnings"   element={PRD(<ProducerEarningsPage />)} />
+          <Route path="/dashboard/producer/messages"   element={PRD(<MessagesPage />)} />
+          <Route path="/dashboard/producer/calendar"   element={PRD(<ProducerCalendarPage />)} />
+          <Route path="/dashboard/producer/assets"     element={PRD(<AssetsPage />)} />
 
-          {/* Client */}
-          <Route path="/dashboard/client"  element={<ProtectedRoute roles={['client']}><ClientDashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/client/*" element={<ProtectedRoute roles={['client']}><ClientDashboard /></ProtectedRoute>} />
+          {/* CLIENT */}
+          <Route path="/dashboard/client"              element={CLI(<ClientDashboard />)} />
+          <Route path="/dashboard/client/projects"     element={CLI(<ClientProjectsPage />)} />
+          <Route path="/dashboard/client/vault"        element={CLI(<ClientVaultPage />)} />
+          <Route path="/dashboard/client/certificates" element={CLI(<ClientCertificatesPage />)} />
+          <Route path="/dashboard/client/calendar"     element={CLI(<ClientCalendarPage />)} />
+          <Route path="/dashboard/client/messages"     element={CLI(<MessagesPage />)} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

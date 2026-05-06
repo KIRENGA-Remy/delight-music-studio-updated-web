@@ -16,6 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(uploadsDir));
 
 // Email: gitoliremy@gmail.com    Password: SecurePass@123
+// hakizimanaroger@gmail.com   Password: SecurePass@123   Producer
+// gitoliremyclaudien5@gmail.com   SecurePass@123   CLIENT=Artist
 app.use('/api', require('./routes/index'));
 app.get('/', (req, res) => res.json({ message: '✅ Delight Music API running' }));
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));

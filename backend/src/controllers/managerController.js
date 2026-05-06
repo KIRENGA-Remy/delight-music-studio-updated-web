@@ -154,3 +154,34 @@ exports.uploadCertificate = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+exports.updateProject = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, producer_id, price, deadline, status, progress_percentage } = req.body;
+  try {
+    const fields = [], values = [];
+    if (title !== undefined)               { fields.push('title = ?');               values.push(title); }
+    if (description !== undefined)         { fields.push('description = ?');         values.push(description); }
+    if (producer_id !== undefined)         { fields.push('producer_id = ?');         values.push(producer_id || null); }
+    if (price !== undefined)               { fields.push('price = ?');               values.push(price || null); }
+    if (deadline !== undefined)            { fields.push('deadline = ?');            values.push(deadline || null); }
+    if (status !== undefined)              { fields.push('status = ?');              values.push(status); }
+    if (progress_percentage !== undefined) { fields.push('progress_percentage = ?'); values.push(progress_percentage); }
+    if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
+    values.push(id);
+    await db.query(`UPDATE projects SET ${fields.join(', ')} WHERE id = ?`, values);
+    return res.json({ message: 'Project updated' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteProject = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM projects WHERE id = ?', [id]);
+    return res.json({ message: 'Project deleted' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};

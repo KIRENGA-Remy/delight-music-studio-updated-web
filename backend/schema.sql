@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
+
 CREATE TABLE IF NOT EXISTS projects (
     id INT PRIMARY KEY AUTO_INCREMENT,
     client_id INT NOT NULL,
@@ -91,5 +93,62 @@ CREATE TABLE IF NOT EXISTS partner_requests (
     message TEXT,
     status ENUM('pending','contacted','converted') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Run these ALTER/CREATE statements to add new features
+
+-- 1. Soft-delete on assets (for rollback)
+ALTER TABLE assets
+  ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL,
+  ADD COLUMN IF NOT EXISTS deleted_by INT NULL,
+  ADD COLUMN IF NOT EXISTS original_name VARCHAR(300) NULL;
+
+-- 2. Ratings table
+CREATE TABLE IF NOT EXISTS ratings (
+  id           INT PRIMARY KEY AUTO_INCREMENT,
+  project_id   INT NOT NULL,
+  rated_by     INT NOT NULL,          -- user id (client or manager)
+  rater_role   ENUM('client','manager') NOT NULL,
+  score        TINYINT NOT NULL CHECK (score BETWEEN 1 AND 5),
+  comment      TEXT,
+  created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_rating (project_id, rated_by),
+  FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+  FOREIGN KEY (rated_by)   REFERENCES users(id)    ON DELETE CASCADE
+);
+
+-- 3. Messages / threads
+CREATE TABLE IF NOT EXISTS messages (
+  id          INT PRIMARY KEY AUTO_INCREMENT,
+  sender_id   INT NOT NULL,
+  receiver_id INT NOT NULL,
+  subject     VARCHAR(255),
+  body        TEXT NOT NULL,
+  is_read     BOOLEAN DEFAULT FALSE,
+  parent_id   INT NULL,              -- for threading / replies
+  deleted_by_sender   BOOLEAN DEFAULT FALSE,
+  deleted_by_receiver BOOLEAN DEFAULT FALSE,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (sender_id)   REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (parent_id)   REFERENCES messages(id) ON DELETE SET NULL
+);
+
+-- 4. Public content / media CMS
+CREATE TABLE IF NOT EXISTS public_content (
+  id          INT PRIMARY KEY AUTO_INCREMENT,
+  section     ENUM('hero','gallery','services','about','stats') NOT NULL,
+  title       VARCHAR(255),
+  subtitle    TEXT,
+  body        TEXT,
+  image_url   VARCHAR(500),
+  video_url   VARCHAR(500),
+  sort_order  INT DEFAULT 0,
+  is_active   BOOLEAN DEFAULT TRUE,
+  created_by  INT NOT NULL,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
