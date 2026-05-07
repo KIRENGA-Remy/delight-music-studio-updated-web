@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -11,7 +11,16 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('dm_token');
     const saved = localStorage.getItem('dm_user');
     if (token && saved) {
-      try { setUser(JSON.parse(saved)); } catch { localStorage.clear(); }
+      try {
+        const parsed = JSON.parse(saved);
+        setUser(parsed);
+        // Refresh profile in background
+        api.get('/profile').then(r => {
+          const fresh = r.data;
+          setUser(fresh);
+          localStorage.setItem('dm_user', JSON.stringify(fresh));
+        }).catch(() => {});
+      } catch { localStorage.clear(); }
     }
     setLoading(false);
   }, []);
@@ -38,8 +47,16 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const r = await api.get('/profile');
+      setUser(r.data);
+      localStorage.setItem('dm_user', JSON.stringify(r.data));
+    } catch {}
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, activateOTP, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, loading, login, activateOTP, logout, isAuthenticated: !!user, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

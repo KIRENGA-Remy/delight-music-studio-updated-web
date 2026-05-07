@@ -152,3 +152,7 @@ CREATE TABLE IF NOT EXISTS public_content (
   FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
+-- 5. Add avatar and bio to users table
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500) NULL,
+  ADD COLUMN IF NOT EXISTS bio TEXT NULL;
