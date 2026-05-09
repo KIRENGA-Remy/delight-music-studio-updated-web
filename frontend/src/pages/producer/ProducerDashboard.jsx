@@ -130,8 +130,25 @@ export default function ProducerDashboard() {
                     </div>
                   </div>
                   <ProgressBar value={task.progress_percentage || 0} label="Progress" />
+                  {/* Progress input */}
+                  {task.status !== 'completed' && task.status !== 'cancelled' && (
+                    <div className="mt-3 pt-3 border-t border-purple-900/20">
+                      <div className="flex items-center gap-2 mb-1">
+                        <input
+                          type="range" min={0} max={100} step={5}
+                          defaultValue={task.progress_percentage || 0}
+                          onChange={e => {
+                            const v = Number(e.target.value);
+                            updateStatus(task.id, v === 100 ? 'completed' : 'in_progress', v);
+                          }}
+                          className="flex-1 accent-purple-500 cursor-pointer h-1.5"
+                        />
+                        <span className="text-purple-400 text-xs w-8 text-right tabular-nums">{task.progress_percentage || 0}%</span>
+                      </div>
+                    </div>
+                  )}
                   {task.price && (
-                    <p className="text-gold-400 text-md mt-2 font-display">
+                    <p className="text-gold-400 text-sm mt-2 font-semibold">
                       Value: {Number(task.price).toLocaleString()} RWF
                     </p>
                   )}

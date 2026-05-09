@@ -9,9 +9,9 @@ import toast from 'react-hot-toast';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import AssetPlayer from '../../components/common/AssetPlayer';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../services/api';
+import api, { fileUrl } from '../../services/api';
 
-const BASE_URL = 'https://delightmusicstudio.onrender.com';
+
 const FILE_TYPES = ['audio','video','document','image'];
 
 const typeIcon  = (t) => ({ audio: FileAudio, video: FileVideo, document: FileText, image: Image }[t] || Music2);
@@ -114,7 +114,7 @@ export default function AssetsPage({ projectId: propProjectId, inModal = false }
   };
 
   const handleShare = async (asset) => {
-    const url = asset.file_url.startsWith('http') ? asset.file_url : `${BASE_URL}${asset.file_url}`;
+    const url = fileUrl(asset.file_url);
     if (navigator.share) {
       try { await navigator.share({ title: asset.original_name || 'Asset', url }); return; } catch {}
     }
@@ -219,7 +219,7 @@ export default function AssetsPage({ projectId: propProjectId, inModal = false }
                   {asset.file_type === 'image' && !asset.is_deleted && (
                     <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-dark-800 border border-purple-900/20">
                       <img
-                        src={asset.file_url.startsWith('http') ? asset.file_url : `${BASE_URL}${asset.file_url}`}
+                        src={fileUrl(asset.file_url)}
                         alt="" className="w-full h-full object-cover"
                         onError={e => { e.target.parentElement.style.display = 'none'; }}
                       />
@@ -270,7 +270,7 @@ export default function AssetsPage({ projectId: propProjectId, inModal = false }
                       )}
                       {/* Download */}
                       {!asset.is_deleted && (
-                        <a href={asset.file_url.startsWith('http') ? asset.file_url : `${BASE_URL}${asset.file_url}`}
+                        <a href={fileUrl(asset.file_url)}
                           download target="_blank" rel="noreferrer"
                           className="p-1.5 text-purple-400 hover:text-gold-400 transition-colors" title="Download">
                           <Download size={14} />

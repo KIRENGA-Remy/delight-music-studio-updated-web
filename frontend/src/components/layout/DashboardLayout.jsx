@@ -10,6 +10,7 @@ const BASE_URL = 'https://delightmusicstudio.onrender.com';
 
 const DashboardLayout = ({ children, title, subtitle }) => {
   const { user } = useAuth();
+  
   const navigate  = useNavigate();
   const [sideOpen, setSideOpen] = useState(false);
   const [profile, setProfile]   = useState(() => {

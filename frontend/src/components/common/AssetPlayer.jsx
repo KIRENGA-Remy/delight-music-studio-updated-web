@@ -1,281 +1,337 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Play, Pause, Volume2, VolumeX, Download, Share2,
-  ExternalLink, Music2, FileText, SkipBack, SkipForward,
-  Maximize2, Copy, Check
+  X, Play, Pause, Volume2, VolumeX, Download, Copy,
+  Check, FileText, SkipBack, SkipForward, Music2, ExternalLink
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-const BASE_URL = 'https://delightmusicstudio.onrender.com';
+import { fileUrl } from '../../services/api';
 
 export default function AssetPlayer({ asset, onClose, allAssets = [] }) {
-  const audioRef = useRef();
-  const videoRef = useRef();
-  const [playing,   setPlaying]   = useState(false);
-  const [muted,     setMuted]     = useState(false);
-  const [progress,  setProgress]  = useState(0);
-  const [duration,  setDuration]  = useState(0);
-  const [volume,    setVolume]    = useState(1);
-  const [copied,    setCopied]    = useState(false);
+  const audioRef  = useRef(null);
+  const videoRef  = useRef(null);
+  const [playing,    setPlaying]    = useState(false);
+  const [muted,      setMuted]      = useState(false);
+  const [progress,   setProgress]   = useState(0);
+  const [currentTime,setCurrentTime]= useState(0);
+  const [duration,   setDuration]   = useState(0);
+  const [volume,     setVolume]     = useState(1);
+  const [copied,     setCopied]     = useState(false);
   const [currentIdx, setCurrentIdx] = useState(
-    allAssets.findIndex(a => a.id === asset?.id)
+    Math.max(0, allAssets.findIndex(a => a.id === asset?.id))
   );
 
-  const current = allAssets[currentIdx] ?? asset;
-  const fileUrl = current?.file_url?.startsWith('http')
-    ? current.file_url
-    : `${BASE_URL}${current?.file_url}`;
-
-  const isAudio    = current?.file_type === 'audio';
-  const isVideo    = current?.file_type === 'video';
-  const isImage    = current?.file_type === 'image';
-  const isDocument = current?.file_type === 'document';
-
+  const current = allAssets.length > 0 ? allAssets[currentIdx] : asset;
+  const url     = fileUrl(current?.file_url);
+  const isAudio = current?.file_type === 'audio';
+  const isVideo = current?.file_type === 'video';
+  const isImage = current?.file_type === 'image';
+  const isDoc   = current?.file_type === 'document';
   const mediaRef = isAudio ? audioRef : videoRef;
 
   useEffect(() => {
     setPlaying(false);
     setProgress(0);
+    setCurrentTime(0);
     setDuration(0);
   }, [currentIdx]);
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     const el = mediaRef.current;
     if (!el) return;
     if (playing) { el.pause(); setPlaying(false); }
-    else         { el.play();  setPlaying(true);  }
-  };
+    else {
+      el.play().then(() => setPlaying(true)).catch(err => {
+        console.error('Play error:', err);
+        toast.error('Cannot play this file. Try downloading it.');
+      });
+    }
+  }, [playing, mediaRef]);
 
-  const onTimeUpdate = () => {
+  const onTimeUpdate = useCallback(() => {
     const el = mediaRef.current;
-    if (!el || !el.duration) return;
+    if (!el || !el.duration || isNaN(el.duration)) return;
+    setCurrentTime(el.currentTime);
     setProgress((el.currentTime / el.duration) * 100);
-  };
+  }, [mediaRef]);
 
-  const onLoadedMetadata = () => {
+  const onLoadedMetadata = useCallback(() => {
     const el = mediaRef.current;
     if (el) setDuration(el.duration);
-  };
+  }, [mediaRef]);
+
+  const onEnded = useCallback(() => {
+    setPlaying(false);
+    setProgress(0);
+    setCurrentTime(0);
+    // Auto-advance playlist
+    if (currentIdx < allAssets.length - 1) {
+      setTimeout(() => setCurrentIdx(i => i + 1), 500);
+    }
+  }, [currentIdx, allAssets.length]);
 
   const seek = (e) => {
     const el = mediaRef.current;
-    if (!el || !el.duration) return;
+    if (!el || !el.duration || isNaN(el.duration)) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const pct  = (e.clientX - rect.left) / rect.width;
+    const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     el.currentTime = pct * el.duration;
+    setProgress(pct * 100);
   };
 
-  const formatTime = (s) => {
-    if (!s || isNaN(s)) return '0:00';
-    const m = Math.floor(s / 60);
+  const handleVolumeChange = (e) => {
+    const v = parseFloat(e.target.value);
+    setVolume(v);
+    setMuted(v === 0);
+    if (mediaRef.current) {
+      mediaRef.current.volume = v;
+      mediaRef.current.muted  = v === 0;
+    }
+  };
+
+  const toggleMute = () => {
+    const el = mediaRef.current;
+    const next = !muted;
+    setMuted(next);
+    if (el) el.muted = next;
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast.success('Link copied to clipboard!');
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      toast.error('Could not copy — please copy the link manually');
+    }
+  };
+
+  const fmt = (s) => {
+    if (!s || isNaN(s) || !isFinite(s)) return '0:00';
+    const m   = Math.floor(s / 60);
     const sec = Math.floor(s % 60).toString().padStart(2, '0');
     return `${m}:${sec}`;
   };
 
-  const handleShare = async () => {
-    const url = fileUrl;
-    if (navigator.share) {
-      try { await navigator.share({ title: current?.original_name || 'Asset', url }); return; } catch {}
-    }
-    await navigator.clipboard.writeText(url).catch(() => {});
-    setCopied(true);
-    toast.success('Link copied!');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const prev = () => setCurrentIdx(i => Math.max(0, i - 1));
-  const next = () => setCurrentIdx(i => Math.min(allAssets.length - 1, i + 1));
-
   const filename = current?.original_name || current?.file_url?.split('/').pop() || 'File';
+  const playableAssets = allAssets.filter(a => ['audio','video'].includes(a.file_type));
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        {/* Backdrop */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/85 backdrop-blur-md"
           onClick={onClose}
         />
 
+        {/* Modal */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.93, y: 20 }}
+          initial={{ opacity: 0, scale: 0.92, y: 24 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.93, y: 20 }}
-          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="relative w-full max-w-xl glass overflow-hidden"
+          exit={{ opacity: 0, scale: 0.92, y: 24 }}
+          transition={{ type: 'spring', damping: 26, stiffness: 280 }}
+          className="relative w-full max-w-lg bg-dark-900 border border-purple-800/40 rounded-2xl overflow-hidden shadow-2xl"
           onClick={e => e.stopPropagation()}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-            <div className="min-w-0 flex-1">
-              <p className="text-white font-display font-bold text-sm truncate">{filename}</p>
-              <p className="text-purple-400 text-xs capitalize mt-0.5">{current?.file_type} · by {current?.uploader_name}</p>
+          <div className="flex items-center justify-between px-5 py-4 border-b border-purple-900/40 bg-dark-950/60">
+            <div className="min-w-0 flex-1 mr-3">
+              <p className="text-white font-semibold text-sm truncate leading-tight">{filename}</p>
+              <p className="text-purple-400 text-xs mt-0.5 capitalize">
+                {current?.file_type} · by {current?.uploader_name}
+              </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-              <button onClick={handleShare}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-purple-300 hover:text-white transition-all"
-                title="Share">
-                {copied ? <Check size={15} className="text-green-400" /> : <Share2 size={15} />}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Copy link */}
+              <button onClick={copyLink} title="Copy link"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-900/40 border border-purple-700/40 text-purple-300 hover:text-white hover:bg-purple-800/40 transition-all text-xs font-medium">
+                {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+                {copied ? 'Copied!' : 'Copy link'}
               </button>
-              <a href={fileUrl} download target="_blank" rel="noreferrer"
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-purple-300 hover:text-gold-400 transition-all"
+              {/* Download */}
+              <a href={url} download={filename} target="_blank" rel="noreferrer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/30 text-gold-400 hover:bg-gold-500/20 transition-all text-xs font-medium"
                 title="Download">
-                <Download size={15} />
+                <Download size={13} /> Download
               </a>
               <button onClick={onClose}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-purple-400 hover:text-white transition-all">
-                <X size={15} />
+                className="p-1.5 rounded-lg text-purple-400 hover:text-white hover:bg-purple-800/40 transition-all">
+                <X size={16} />
               </button>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="p-5">
-            {/* Audio player */}
+          <div className="p-5 space-y-4">
+            {/* ── AUDIO ── */}
             {isAudio && (
-              <div>
-                {/* Waveform / art placeholder */}
-                <div className="w-full h-32 rounded-2xl bg-gradient-to-br from-purple-900/60 to-dark-900/80 border border-purple-800/30 flex items-center justify-center mb-5 overflow-hidden relative">
-                  <div className="flex items-end gap-0.5 h-16">
-                    {Array.from({ length: 40 }).map((_, i) => (
-                      <div key={i}
-                        className="w-1.5 rounded-full bg-purple-gradient opacity-60"
-                        style={{ height: `${20 + Math.sin(i * 0.5) * 30 + Math.random() * 20}%` }}
-                      />
-                    ))}
+              <>
+                <audio
+                  ref={audioRef}
+                  src={url}
+                  onTimeUpdate={onTimeUpdate}
+                  onLoadedMetadata={onLoadedMetadata}
+                  onEnded={onEnded}
+                  onError={() => toast.error('Audio failed to load')}
+                  preload="metadata"
+                  crossOrigin="anonymous"
+                />
+                {/* Waveform art */}
+                <div className="h-28 rounded-xl bg-gradient-to-br from-purple-950/80 to-dark-950 border border-purple-800/30 flex items-center justify-center overflow-hidden">
+                  <div className="flex items-end gap-[2px] px-4 w-full h-20">
+                    {Array.from({ length: 60 }).map((_, i) => {
+                      const height = 15 + Math.abs(Math.sin(i * 0.45 + 1.2) * 50) + Math.abs(Math.sin(i * 0.2) * 25);
+                      const isPlayed = (i / 60) * 100 < progress;
+                      return (
+                        <div key={i} className="flex-1 rounded-full transition-colors duration-100"
+                          style={{
+                            height: `${height}%`,
+                            backgroundColor: isPlayed ? '#9333EA' : '#3B1F6A',
+                            opacity: isPlayed ? 1 : 0.5,
+                          }} />
+                      );
+                    })}
                   </div>
-                  <Music2 size={32} className="absolute text-purple-400/30" />
                 </div>
-                <audio ref={audioRef} src={fileUrl}
-                  onTimeUpdate={onTimeUpdate} onLoadedMetadata={onLoadedMetadata}
-                  onEnded={() => setPlaying(false)} />
-              </div>
+              </>
             )}
 
-            {/* Video player */}
+            {/* ── VIDEO ── */}
             {isVideo && (
-              <div className="rounded-2xl overflow-hidden mb-4 bg-black">
-                <video ref={videoRef} src={fileUrl}
-                  className="w-full max-h-72 object-contain"
-                  onTimeUpdate={onTimeUpdate} onLoadedMetadata={onLoadedMetadata}
-                  onEnded={() => setPlaying(false)}
+              <div className="rounded-xl overflow-hidden bg-black border border-purple-900/30">
+                <video
+                  ref={videoRef}
+                  src={url}
+                  className="w-full max-h-64 object-contain"
+                  onTimeUpdate={onTimeUpdate}
+                  onLoadedMetadata={onLoadedMetadata}
+                  onEnded={onEnded}
+                  onError={() => toast.error('Video failed to load')}
+                  preload="metadata"
+                  crossOrigin="anonymous"
+                  playsInline
                   muted={muted}
-                  controls={false}
                 />
               </div>
             )}
 
-            {/* Image viewer */}
+            {/* ── IMAGE ── */}
             {isImage && (
-              <div className="rounded-2xl overflow-hidden mb-4 bg-dark-800/50 flex items-center justify-center min-h-48 max-h-80">
-                <img src={fileUrl} alt={filename}
-                  className="max-w-full max-h-80 object-contain rounded-xl"
-                  onError={e => { e.target.style.display = 'none'; }}
+              <div className="rounded-xl overflow-hidden bg-dark-800/60 border border-purple-900/30 flex items-center justify-center min-h-40 max-h-72">
+                <img src={url} alt={filename}
+                  className="max-w-full max-h-72 object-contain rounded-lg"
+                  onError={e => { e.target.alt = 'Image failed to load'; }}
                 />
               </div>
             )}
 
-            {/* Document */}
-            {isDocument && (
-              <div className="rounded-2xl border border-purple-900/30 bg-dark-800/40 p-8 text-center mb-4">
-                <FileText size={48} className="mx-auto mb-3 text-gold-400 opacity-70" />
-                <p className="text-white font-display font-semibold">{filename}</p>
-                <p className="text-purple-400 text-sm mt-1">Document file</p>
-                <a href={fileUrl} target="_blank" rel="noreferrer"
-                  className="mt-4 btn-gold text-sm px-5 py-2.5 inline-flex">
-                  <ExternalLink size={15} /> Open Document
+            {/* ── DOCUMENT ── */}
+            {isDoc && (
+              <div className="rounded-xl border border-purple-900/30 bg-dark-800/40 p-8 text-center">
+                <FileText size={44} className="mx-auto mb-3 text-gold-400 opacity-80" />
+                <p className="text-white font-semibold text-sm">{filename}</p>
+                <p className="text-purple-400 text-xs mt-1 mb-4">Document file · click to open</p>
+                <a href={url} target="_blank" rel="noreferrer"
+                  className="btn-gold text-sm px-5 py-2 inline-flex">
+                  <ExternalLink size={14} /> Open Document
                 </a>
               </div>
             )}
 
-            {/* Audio/Video controls */}
+            {/* ── Audio/Video Controls ── */}
             {(isAudio || isVideo) && (
               <div className="space-y-3">
-                {/* Progress bar */}
-                <div className="group">
+                {/* Seek bar */}
+                <div>
                   <div
-                    className="w-full h-1.5 bg-dark-800 rounded-full cursor-pointer relative overflow-hidden hover:h-2.5 transition-all"
+                    className="w-full h-2 bg-dark-800 rounded-full cursor-pointer relative group"
                     onClick={seek}>
                     <div
-                      className="h-full bg-purple-gradient rounded-full transition-none"
-                      style={{ width: `${progress}%` }}
+                      className="h-full bg-purple-gradient rounded-full pointer-events-none transition-none"
+                      style={{ width: `${Math.min(100, progress)}%` }}
+                    />
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                      style={{ left: `calc(${Math.min(100, progress)}% - 6px)` }}
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-purple-500 mt-1 font-display">
-                    <span>{formatTime(mediaRef.current?.currentTime)}</span>
-                    <span>{formatTime(duration)}</span>
+                  <div className="flex justify-between text-xs text-purple-500 mt-1.5 font-mono tabular-nums">
+                    <span>{fmt(currentTime)}</span>
+                    <span>{fmt(duration)}</span>
                   </div>
                 </div>
 
-                {/* Control buttons */}
-                <div className="flex items-center justify-center gap-4">
-                  {allAssets.length > 1 && (
-                    <button onClick={prev} disabled={currentIdx === 0}
-                      className="p-2 text-purple-400 hover:text-white disabled:opacity-30 transition-colors">
-                      <SkipBack size={18} />
-                    </button>
-                  )}
+                {/* Play / skip controls */}
+                <div className="flex items-center justify-center gap-5">
+                  <button
+                    onClick={() => setCurrentIdx(i => Math.max(0, i - 1))}
+                    disabled={currentIdx <= 0 || allAssets.length <= 1}
+                    className="p-2 text-purple-400 hover:text-white disabled:opacity-25 transition-colors">
+                    <SkipBack size={20} />
+                  </button>
 
-                  <button onClick={togglePlay}
-                    className="w-12 h-12 rounded-full bg-purple-gradient flex items-center justify-center shadow-purple hover:scale-105 transition-transform">
+                  <button
+                    onClick={togglePlay}
+                    className="w-12 h-12 rounded-full bg-purple-gradient flex items-center justify-center shadow-purple hover:scale-105 active:scale-95 transition-transform">
                     {playing
                       ? <Pause size={20} className="text-white" />
                       : <Play  size={20} className="text-white ml-0.5" />
                     }
                   </button>
 
-                  {allAssets.length > 1 && (
-                    <button onClick={next} disabled={currentIdx === allAssets.length - 1}
-                      className="p-2 text-purple-400 hover:text-white disabled:opacity-30 transition-colors">
-                      <SkipForward size={18} />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setCurrentIdx(i => Math.min(allAssets.length - 1, i + 1))}
+                    disabled={currentIdx >= allAssets.length - 1 || allAssets.length <= 1}
+                    className="p-2 text-purple-400 hover:text-white disabled:opacity-25 transition-colors">
+                    <SkipForward size={20} />
+                  </button>
                 </div>
 
                 {/* Volume */}
-                <div className="flex items-center gap-3">
-                  <button onClick={() => setMuted(p => !p)}
-                    className="text-purple-400 hover:text-white transition-colors">
-                    {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                <div className="flex items-center gap-3 px-2">
+                  <button onClick={toggleMute}
+                    className="text-purple-400 hover:text-white transition-colors flex-shrink-0">
+                    {muted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
                   </button>
-                  <input type="range" min={0} max={1} step={0.05} value={muted ? 0 : volume}
-                    onChange={e => {
-                      const v = parseFloat(e.target.value);
-                      setVolume(v);
-                      if (mediaRef.current) mediaRef.current.volume = v;
-                      setMuted(v === 0);
-                    }}
-                    className="flex-1 accent-purple-500 h-1" />
+                  <input
+                    type="range" min={0} max={1} step={0.05}
+                    value={muted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="flex-1 h-1 accent-purple-500 cursor-pointer"
+                  />
+                  <span className="text-purple-500 text-xs w-8 text-right tabular-nums">
+                    {Math.round((muted ? 0 : volume) * 100)}%
+                  </span>
                 </div>
               </div>
             )}
 
-            {/* Playlist */}
+            {/* Playlist (for audio assets in same project) */}
             {allAssets.length > 1 && (
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <p className="text-purple-500 text-xs font-display uppercase tracking-widest mb-2">
-                  Playlist ({allAssets.length})
+              <div className="border-t border-purple-900/30 pt-3">
+                <p className="text-purple-500 text-xs font-semibold uppercase tracking-wider mb-2">
+                  Playlist — {allAssets.length} files
                 </p>
-                <div className="space-y-1 max-h-32 overflow-y-auto">
-                  {allAssets.map((a, idx) => (
-                    <button key={a.id} onClick={() => setCurrentIdx(idx)}
-                      className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all ${
-                        idx === currentIdx
-                          ? 'bg-purple-gradient text-white'
-                          : 'text-purple-300 hover:bg-purple-900/20 hover:text-white'
-                      }`}>
-                      <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-xs ${
-                        idx === currentIdx ? 'bg-white/20' : 'bg-purple-900/40'
-                      }`}>
-                        {idx === currentIdx && playing ? '▶' : idx + 1}
-                      </div>
-                      <span className="truncate font-display">{a.original_name || a.file_url.split('/').pop()}</span>
-                      <span className="text-xs opacity-60 capitalize flex-shrink-0">{a.file_type}</span>
-                    </button>
-                  ))}
+                <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
+                  {allAssets.map((a, idx) => {
+                    const isCurrent = idx === currentIdx;
+                    return (
+                      <button key={a.id} onClick={() => setCurrentIdx(idx)}
+                        className={`w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                          isCurrent
+                            ? 'bg-purple-gradient text-white'
+                            : 'text-purple-300 hover:bg-purple-900/30 hover:text-white'
+                        }`}>
+                        <span className={`w-5 h-5 rounded flex items-center justify-center text-xs flex-shrink-0 ${isCurrent ? 'bg-white/20' : 'bg-purple-900/50'}`}>
+                          {isCurrent && playing ? '▶' : idx + 1}
+                        </span>
+                        <span className="truncate flex-1">{a.original_name || a.file_url.split('/').pop()}</span>
+                        <span className="text-xs opacity-60 capitalize flex-shrink-0">{a.file_type}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

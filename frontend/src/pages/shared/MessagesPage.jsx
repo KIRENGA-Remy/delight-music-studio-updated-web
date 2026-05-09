@@ -171,7 +171,7 @@ export default function MessagesPage() {
 
           <div className="mt-4 pt-4 border-t border-purple-900/30">
             <p className="text-purple-500 text-xs font-display uppercase tracking-widest mb-2 px-2">Contacts</p>
-            <div className="space-y-0.5 overflow-y-auto max-h-48">
+            <div className="space-y-0.5 overflow-y-auto max-h-screen">
               {contacts.map(c => (
                 <button key={c.id} onClick={() => startCompose(c.id)}
                   className="w-full flex items-center gap-2 px-2 py-2 rounded-xl hover:bg-purple-800/20 transition-all group">

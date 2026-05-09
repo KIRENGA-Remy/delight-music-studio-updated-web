@@ -7,6 +7,7 @@ import {
 import toast from 'react-hot-toast';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import ProgressBar from '../../components/common/ProgressBar';
+import { SlidersHorizontal } from 'lucide-react';
 import RatingWidget from '../../components/common/RatingWidget';
 import AssetsPage from '../shared/AssetsPage';
 import api from '../../services/api';
@@ -31,12 +32,17 @@ export default function ManagerPipelinePage() {
   const [editForm,  setEditForm]  = useState(EMPTY);
   const [expanded,  setExpanded]  = useState({});
   const [assetsFor, setAssetsFor] = useState(null);
+  const [progEdit,  setProgEdit]  = useState({});
 
   const fetchAll = async () => {
     setLoading(true);
     try {
       const [d, u] = await Promise.all([api.get('/manager/dashboard'), api.get('/manager/users')]);
-      setProjects(d.data.recent_projects || []);
+      const projs = d.data.recent_projects || [];
+      setProjects(projs);
+      const initProg = {};
+      projs.forEach(p => { initProg[p.id] = p.progress_percentage || 0; });
+      setProgEdit(initProg);
       setClients(u.data.filter(u => u.role === 'client'));
       setProducers(u.data.filter(u => u.role === 'producer'));
     } catch { toast.error('Failed to load data'); }
@@ -44,6 +50,15 @@ export default function ManagerPipelinePage() {
   };
 
   useEffect(() => { fetchAll(); }, []);
+
+  const saveProgress = async (id) => {
+    const pct = Number(progEdit[id] || 0);
+    try {
+      await api.put(`/manager/projects/${id}`, { progress_percentage: pct, status: pct === 100 ? 'completed' : pct > 0 ? 'in_progress' : 'pending' });
+      toast.success('Progress saved');
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, progress_percentage: pct } : p));
+    } catch { toast.error('Failed'); }
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -143,13 +158,34 @@ export default function ManagerPipelinePage() {
                           <Calendar size={11} /> {new Date(p.deadline).toLocaleDateString()}
                         </div>
                       )}
-                      <ProgressBar value={p.progress_percentage || 0} size="sm" />
-                      {p.price && <p className="text-green-400 text-xs mt-1.5 font-display font-bold">{Number(p.price).toLocaleString()} RWF</p>}
+                      <ProgressBar value={progEdit[p.id] ?? p.progress_percentage ?? 0} size="sm" />
+                      {p.price && <p className="text-green-400 text-xs mt-1.5 font-semibold">{Number(p.price).toLocaleString()} RWF</p>}
 
                       <AnimatePresence>
                         {expanded[p.id] && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                             <div className="mt-3 pt-3 border-t border-purple-900/20 space-y-3">
+                              {/* Progress slider */}
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="text-purple-500 text-xs font-semibold uppercase tracking-wider flex items-center gap-1"><SlidersHorizontal size={10}/> Progress</p>
+                                  <div className="flex items-center gap-1">
+                                    <input type="number" min={0} max={100}
+                                      value={progEdit[p.id] ?? 0}
+                                      onChange={e => setProgEdit(prev => ({...prev, [p.id]: Math.min(100,Math.max(0,Number(e.target.value)))}))}
+                                      className="w-12 text-center bg-dark-800 border border-purple-800/50 rounded px-1 py-0.5 text-white text-xs focus:outline-none focus:border-purple-500" />
+                                    <span className="text-purple-500 text-xs">%</span>
+                                  </div>
+                                </div>
+                                <input type="range" min={0} max={100} step={5}
+                                  value={progEdit[p.id] ?? 0}
+                                  onChange={e => setProgEdit(prev => ({...prev, [p.id]: Number(e.target.value)}))}
+                                  className="w-full accent-purple-500 cursor-pointer h-1" />
+                                <button onClick={() => saveProgress(p.id)}
+                                  className="mt-1.5 w-full py-1 text-xs rounded-lg bg-purple-gradient text-white font-medium transition-all hover:opacity-90">
+                                  Save Progress
+                                </button>
+                              </div>
                               {/* Rating widget */}
                               <RatingWidget projectId={p.id} projectTitle={p.title} />
                               {/* Assets quick access */}
