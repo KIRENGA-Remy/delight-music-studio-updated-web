@@ -145,7 +145,8 @@ exports.createProject = async (req, res) => {
 
 exports.uploadCertificate = async (req, res) => {
   const { user_id, issued_date } = req.body;
-  const file_url = req.file ? `/uploads/${req.file.filename}` : req.body.certificate_url;
+  const getUrl = req.getFileUrl || ((f) => f.path || `/uploads/${f.filename}`);
+  const file_url = req.file ? getUrl(req.file) : req.body.certificate_url;
   try {
     await db.query('INSERT INTO certificates (user_id, certificate_url, issued_date) VALUES (?,?,?)',
       [user_id, file_url, issued_date]);

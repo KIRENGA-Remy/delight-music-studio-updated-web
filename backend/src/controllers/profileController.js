@@ -18,7 +18,8 @@ exports.getProfile = async (req, res) => {
 // UPDATE profile (name, bio, client_type)
 exports.updateProfile = async (req, res) => {
   const { fullname, bio, client_type, phone } = req.body;
-  const avatar_url = req.file ? `/uploads/${req.file.filename}` : undefined;
+  const getUrl = req.getFileUrl || ((f) => f.path || `/uploads/${f.filename}`);
+  const avatar_url = req.file ? getUrl(req.file) : undefined;
   try {
     const fields = [], values = [];
     if (fullname)              { fields.push('fullname = ?');    values.push(fullname); }

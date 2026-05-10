@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE    = 'https://delightmusicstudio.onrender.com';
-export const UPLOADS_URL = `${API_BASE}`;  
+export const API_BASE = 'https://delightmusicstudio.onrender.com';
 
 const api = axios.create({
   baseURL: `${API_BASE}/api`,
@@ -26,11 +25,11 @@ api.interceptors.response.use(
   }
 );
 
-/** Build full URL for an uploaded file path like /uploads/xxx.mp3 */
 export function fileUrl(path) {
   if (!path) return '';
-  if (path.startsWith('http')) return path;
-  return `${API_BASE}${path}`;
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  // local path like /uploads/xxx.mp3
+  return `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
 export default api;

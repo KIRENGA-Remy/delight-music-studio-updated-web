@@ -21,14 +21,20 @@ exports.updateTaskStatus = async (req, res) => {
   const { status, progress_percentage } = req.body;
   try {
     if (progress_percentage !== undefined) {
-      await db.query('UPDATE projects SET progress_percentage = ?, status = ? WHERE id = ? AND producer_id = ?',
-        [progress_percentage, status || 'in_progress', req.params.id, req.user.id]);
+      await db.query(
+        'UPDATE projects SET progress_percentage = ?, status = ? WHERE id = ? AND producer_id = ?',
+        [progress_percentage, status || 'in_progress', req.params.id, req.user.id]
+      );
     } else {
-      await db.query("UPDATE projects SET status = ? WHERE id = ? AND producer_id = ?",
-        [status, req.params.id, req.user.id]);
+      await db.query(
+        'UPDATE projects SET status = ? WHERE id = ? AND producer_id = ?',
+        [status, req.params.id, req.user.id]
+      );
     }
-    await db.query("UPDATE work_orders SET status = ? WHERE project_id = ? AND producer_id = ?",
-      [status === 'completed' ? 'completed' : 'in_progress', req.params.id, req.user.id]);
+    await db.query(
+      "UPDATE work_orders SET status = ? WHERE project_id = ? AND producer_id = ?",
+      [status === 'completed' ? 'completed' : 'in_progress', req.params.id, req.user.id]
+    );
     return res.json({ message: 'Task updated' });
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -37,26 +43,36 @@ exports.updateTaskStatus = async (req, res) => {
 
 exports.uploadAsset = async (req, res) => {
   const { project_id, file_type } = req.body;
-  const file_url = req.file ? `/uploads/${req.file.filename}` : req.body.file_url;
-  try {
-    await db.query('INSERT INTO assets (project_id, file_url, file_type, uploaded_by) VALUES (?,?,?,?)',
-      [project_id, file_url, file_type || 'audio', req.user.id]);
-    await db.query("UPDATE work_orders SET draft_url = ? WHERE project_id = ? AND producer_id = ?",
-      [file_url, project_id, req.user.id]);
-    return res.status(201).json({ message: 'Asset uploaded', file_url });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
-};
 
-exports.getNotifications = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded. Check multipart/form-data and file field name.' });
+  }
+
+  // Use helper attached by route middleware, or fall back
+  const getUrl = req.getFileUrl || ((f) => f.path || `/uploads/${f.filename}`);
+  const file_url = getUrl(req.file);
+
+  // Store original filename for display
+  const original_name = req.file.originalname || req.file.filename;
+
   try {
-    const [rows] = await db.query(`
-      SELECT n.*, u.fullname as sender_name
-      FROM notifications n JOIN users u ON n.sender_id = u.id
-      WHERE n.receiver_id = ? ORDER BY n.created_at DESC LIMIT 30
-    `, [req.user.id]);
-    return res.json(rows);
+    const [result] = await db.query(
+      'INSERT INTO assets (project_id, file_url, file_type, uploaded_by, original_name) VALUES (?,?,?,?,?)',
+      [project_id, file_url, file_type || 'audio', req.user.id, original_name]
+    );
+
+    // Update work order draft URL
+    await db.query(
+      'UPDATE work_orders SET draft_url = ? WHERE project_id = ? AND producer_id = ?',
+      [file_url, project_id, req.user.id]
+    ).catch(() => {}); // Non-fatal if work_order doesn't exist
+
+    return res.status(201).json({
+      message: 'Asset uploaded successfully',
+      file_url,
+      original_name,
+      id: result.insertId,
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -71,7 +87,8 @@ exports.getEarnings = async (req, res) => {
       WHERE p.producer_id = ?
       ORDER BY p.created_at DESC
     `, [req.user.id]);
-    const total = rows.filter(r => r.status === 'completed').reduce((s, r) => s + Number(r.price || 0), 0);
+    const total = rows.filter(r => r.status === 'completed')
+      .reduce((s, r) => s + Number(r.price || 0), 0);
     return res.json({ earnings: rows, total_earned: total });
   } catch (err) {
     return res.status(500).json({ error: err.message });

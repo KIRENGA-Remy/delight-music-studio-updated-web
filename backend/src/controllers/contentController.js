@@ -34,7 +34,8 @@ exports.getAllContent = async (req, res) => {
 // ── CREATE content item ────────────────────────────────────────
 exports.createContent = async (req, res) => {
   const { section, title, subtitle, body, image_url, video_url, sort_order } = req.body;
-  const file_url = req.file ? `/uploads/${req.file.filename}` : (image_url || null);
+  const getUrl = req.getFileUrl || ((f) => f.path || `/uploads/${f.filename}`);
+  const file_url = req.file ? getUrl(req.file) : (image_url || null);
   if (!section) return res.status(400).json({ error: 'section is required' });
   try {
     const [result] = await db.query(`
@@ -51,7 +52,8 @@ exports.createContent = async (req, res) => {
 exports.updateContent = async (req, res) => {
   const { id } = req.params;
   const { title, subtitle, body, image_url, video_url, sort_order, is_active } = req.body;
-  const file_url = req.file ? `/uploads/${req.file.filename}` : (image_url || undefined);
+  const getUrl = req.getFileUrl || ((f) => f.path || `/uploads/${f.filename}`);
+  const file_url = req.file ? getUrl(req.file) : (image_url || undefined);
   try {
     const fields = [];
     const values = [];

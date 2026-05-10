@@ -6,50 +6,48 @@ const fs      = require('fs');
 
 const app = express();
 
-// Ensure uploads dir exists
+// Ensure local uploads dir exists (used when Cloudinary not configured)
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-// CORS — allow all origins (including audio/video cross-origin playback)
+// CORS
 app.use(cors({
   origin: '*',
   credentials: true,
   exposedHeaders: ['Content-Range', 'Accept-Ranges', 'Content-Length', 'Content-Type'],
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve uploaded files with proper headers for audio/video streaming
+// Serve local uploads (fallback when Cloudinary not configured)
 app.use('/uploads', (req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   res.setHeader('Accept-Ranges', 'bytes');
   next();
-}, express.static(uploadsDir, {
-  setHeaders: (res, filePath) => {
-    const ext = path.extname(filePath).toLowerCase();
-    const audioExts = ['.mp3', '.wav', '.ogg', '.aac', '.flac', '.m4a'];
-    const videoExts = ['.mp4', '.webm', '.mov', '.avi', '.mkv'];
-    const imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-    if (audioExts.includes(ext)) res.setHeader('Content-Type', 'audio/' + ext.slice(1).replace('mp3','mpeg'));
-    else if (videoExts.includes(ext)) res.setHeader('Content-Type', 'video/' + ext.slice(1).replace('mov','quicktime'));
-    else if (imageExts.includes(ext)) {
-      const imgType = ext === '.jpg' || ext === '.jpeg' ? 'jpeg' : ext.slice(1);
-      res.setHeader('Content-Type', 'image/' + imgType);
-    }
-  },
-}));
+}, express.static(uploadsDir));
 
 // Email: gitoliremy@gmail.com    Password: SecurePass@123
 // hakizimanaroger@gmail.com   Password: SecurePass@123   Producer
 // gitoliremyclaudien5@gmail.com   SecurePass@123   CLIENT=Artist
+// API routes
 app.use('/api', require('./routes/index'));
-app.get('/', (req, res) => res.json({ message: '✅ Delight Music API running' }));
+
+app.get('/', (req, res) => res.json({
+  message: '✅ Delight Music Studio API',
+  storage: process.env.CLOUDINARY_CLOUD_NAME ? 'Cloudinary' : 'Local disk',
+}));
+
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
-app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
+app.use((err, req, res, next) => {
+  console.error('Server error:', err.message);
+  res.status(500).json({ error: err.message });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Delight Music Studio API → https://delightmusicstudio.onrender.com`);
+  const storage = process.env.CLOUDINARY_CLOUD_NAME ? ' Cloudinary' : ' Local disk';
+  console.log(`✅ Delight Music Studio API running on port ${PORT}`);
+  console.log(`📁 File storage: ${storage}`);
 });
