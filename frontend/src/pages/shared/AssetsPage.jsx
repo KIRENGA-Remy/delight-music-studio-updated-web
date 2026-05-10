@@ -36,6 +36,7 @@ export default function AssetsPage({ projectId: propProjectId, inModal = false }
   const [file,       setFile]       = useState(null);
   const [fileType,   setFileType]   = useState('audio');
   const [confirm,    setConfirm]    = useState(null);
+  const [copiedId,   setCopiedId]   = useState(null); // track which asset link was copied
   const [player,     setPlayer]     = useState(null); // asset to play/view
 
   // Load project list
@@ -115,11 +116,22 @@ export default function AssetsPage({ projectId: propProjectId, inModal = false }
 
   const handleShare = async (asset) => {
     const url = fileUrl(asset.file_url);
-    if (navigator.share) {
-      try { await navigator.share({ title: asset.original_name || 'Asset', url }); return; } catch {}
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
     }
-    await navigator.clipboard.writeText(url).catch(() => {});
-    toast.success('Link copied!');
+    setCopiedId(asset.id);
+    toast.success('Link copied to clipboard!');
+    setTimeout(() => setCopiedId(null), 2500);
   };
 
   const playableAssets = assets.filter(a => !a.is_deleted && (canPlay(a.file_type) || canView(a.file_type)));
@@ -276,11 +288,14 @@ export default function AssetsPage({ projectId: propProjectId, inModal = false }
                           <Download size={14} />
                         </a>
                       )}
-                      {/* Share */}
+                      {/* Share / Copy link */}
                       {!asset.is_deleted && (
                         <button onClick={() => handleShare(asset)}
-                          className="p-1.5 text-purple-400 hover:text-blue-400 transition-colors" title="Share">
-                          <Share2 size={14} />
+                          className={`p-1.5 transition-colors ${copiedId === asset.id ? 'text-green-400' : 'text-purple-400 hover:text-blue-400'}`}
+                          title={copiedId === asset.id ? 'Copied!' : 'Copy link'}>
+                          {copiedId === asset.id
+                            ? <Check size={14} />
+                            : <Share2 size={14} />}
                         </button>
                       )}
                       {/* Edit */}
