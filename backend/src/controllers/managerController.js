@@ -186,3 +186,32 @@ exports.deleteProject = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+exports.getTestimonials = async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM testimonials ORDER BY created_at DESC');
+    return res.json(rows);
+  } catch (err) { return res.status(500).json({ error: err.message }); }
+};
+
+exports.updateTestimonial = async (req, res) => {
+  const { client_name, message, rating, is_approved } = req.body;
+  try {
+    const fields = [], values = [];
+    if (client_name !== undefined)  { fields.push('client_name = ?');  values.push(client_name); }
+    if (message !== undefined)      { fields.push('message = ?');      values.push(message); }
+    if (rating !== undefined)       { fields.push('rating = ?');       values.push(rating); }
+    if (is_approved !== undefined)  { fields.push('is_approved = ?');  values.push(is_approved); }
+    if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
+    values.push(req.params.id);
+    await db.query(`UPDATE testimonials SET ${fields.join(', ')} WHERE id = ?`, values);
+    return res.json({ message: 'Testimonial updated' });
+  } catch (err) { return res.status(500).json({ error: err.message }); }
+};
+
+exports.deleteTestimonial = async (req, res) => {
+  try {
+    await db.query('DELETE FROM testimonials WHERE id = ?', [req.params.id]);
+    return res.json({ message: 'Testimonial deleted' });
+  } catch (err) { return res.status(500).json({ error: err.message }); }
+};

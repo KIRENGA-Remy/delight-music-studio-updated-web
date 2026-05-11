@@ -27,6 +27,7 @@ import ManagerFinancialsPage   from './pages/manager/FinancialsPage';
 import ManagerCertificatesPage from './pages/manager/CertificatesPage';
 import ManagerCalendarPage     from './pages/manager/CalendarPage';
 import ContentCMSPage          from './pages/manager/ContentCMSPage';
+import ManagerTestimonialsPage   from './pages/manager/TestimonialsPage';
 
 // Producer
 import ProducerDashboard    from './pages/producer/ProducerDashboard';
@@ -87,6 +88,7 @@ export default function App() {
           <Route path="/dashboard/manager/notifications"  element={MGR(<NotificationsPage />)} />
           <Route path="/dashboard/manager/messages"       element={MGR(<MessagesPage />)} />
           <Route path="/dashboard/manager/content"        element={MGR(<ContentCMSPage />)} />
+          <Route path="/dashboard/manager/testimonials"  element={MGR(<ManagerTestimonialsPage />)} />
           <Route path="/dashboard/manager/settings"       element={MGR(<SettingsPage />)} />
 
           {/* ── PRODUCER ── */}

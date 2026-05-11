@@ -3,9 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Music, Mail, Phone, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function LoginPage() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reason') === 'timeout') {
+      toast('You were logged out after 1 hour of inactivity.', {
+        icon: '⏱️',
+        duration: 5000,
+      });
+      // Clean the URL
+      window.history.replaceState({}, '', '/login');
+    }
+  }, []);
+
   const { login } = useAuth();
   const navigate   = useNavigate();
   const [form, setForm]       = useState({ identifier: '', password: '' });

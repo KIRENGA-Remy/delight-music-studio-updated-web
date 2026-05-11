@@ -34,6 +34,66 @@ const GRAD_COLORS = [
 ];
 const FADE_UP = { initial:{opacity:0,y:30}, whileInView:{opacity:1,y:0}, viewport:{once:true}, transition:{duration:0.5} };
 
+/* ── Placeholder testimonials shown before real ones are added ── */
+const PLACEHOLDER_TESTIMONIALS = [
+  {
+    id: 'p1', client_name: 'Jean Paul Habimana', rating: 5,
+    message: 'Delight Music Studio transformed my voice completely. The vocal coaching is world-class and the team is incredibly supportive. I recorded my debut single here and it sounds amazing!',
+  },
+  {
+    id: 'p2', client_name: 'Clarisse Uwimana', rating: 5,
+    message: 'The audio production quality is outstanding. My album was mixed and mastered here and every musician I\'ve shared it with can\'t believe it was recorded in Rwanda. Truly professional!',
+  },
+  {
+    id: 'p3', client_name: 'Emmanuel Nshimiyimana', rating: 5,
+    message: 'I started piano lessons with zero experience. Within 6 months I was performing at our church. The instructors are patient, talented, and passionate about what they do.',
+  },
+];
+
+function TestimonialsSection({ testimonials }) {
+  const display = testimonials.length > 0 ? testimonials.slice(0, 3) : PLACEHOLDER_TESTIMONIALS;
+  const isPlaceholder = testimonials.length === 0;
+  return (
+    <section className="py-16 sm:py-20 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto">
+        <motion.div {...FADE_UP} className="text-center mb-10">
+          <span className="badge-gold mb-3">Client Love</span>
+          <h2 className="section-title text-white mt-3">What They <span className="gradient-text">Say</span></h2>
+          {isPlaceholder && (
+            <p className="text-purple-600 text-xs mt-2 italic">
+              Sample testimonials — add real ones via the Manager Dashboard
+            </p>
+          )}
+        </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+          {display.map((t, i) => (
+            <motion.div key={t.id || i} {...FADE_UP} transition={{ delay: i * 0.1 }}
+              className={`card-dark p-5 sm:p-6 hover:border-purple-600/40 transition-all ${isPlaceholder ? 'border-dashed' : ''}`}>
+              <div className="flex gap-1 mb-3">
+                {[...Array(t.rating || 5)].map((_, j) => (
+                  <Star key={j} size={13} className="text-gold-400" fill="currentColor" />
+                ))}
+              </div>
+              <p className="text-purple-200 text-sm leading-relaxed mb-4">"{t.message}"</p>
+              <div className="flex items-center gap-2 pt-3 border-t border-purple-900/20">
+                <div className="w-8 h-8 rounded-full bg-purple-gradient flex items-center justify-center text-white font-semibold text-xs flex-shrink-0">
+                  {t.client_name[0].toUpperCase()}
+                </div>
+                <p className="text-white font-semibold text-sm">— {t.client_name}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link to="/testimonials" className="btn-outline text-sm">
+            View All Reviews <ChevronRight size={14} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const [testimonials, setTestimonials] = useState([]);
   const [cmsContent,   setCmsContent]   = useState({});
@@ -258,34 +318,7 @@ export default function HomePage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      {testimonials.length > 0 && (
-        <section className="py-16 sm:py-20 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto">
-            <motion.div {...FADE_UP} className="text-center mb-10">
-              <span className="badge-gold mb-3">Client Love</span>
-              <h2 className="section-title text-white mt-3">What They <span className="gradient-text">Say</span></h2>
-            </motion.div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
-              {testimonials.slice(0, 3).map((t, i) => (
-                <motion.div key={i} {...FADE_UP} transition={{ delay: i * 0.1 }} className="card-dark p-5 sm:p-6">
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(t.rating || 5)].map((_, j) => (
-                      <Star key={j} size={13} className="text-gold-400" fill="currentColor" />
-                    ))}
-                  </div>
-                  <p className="text-purple-200 text-sm leading-relaxed mb-4">"{t.message}"</p>
-                  <p className="text-white font-semibold text-sm">— {t.client_name}</p>
-                </motion.div>
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Link to="/testimonials" className="btn-outline text-sm">
-                View All Reviews <ChevronRight size={14} />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      <TestimonialsSection testimonials={testimonials} />
 
       <Footer />
     </div>

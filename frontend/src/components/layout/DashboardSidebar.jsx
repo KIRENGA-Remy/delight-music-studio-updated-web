@@ -21,6 +21,7 @@ const MANAGER_NAV = [
   { to: '/dashboard/manager/calendar',     label: 'Calendar',         icon: Calendar },
   { to: '/dashboard/manager/notifications',label: 'Notifications',    icon: Bell,           badge: 'notif' },
   { to: '/dashboard/manager/messages',     label: 'Messages',         icon: MessageSquare,  badge: 'msg' },
+  { to: '/dashboard/manager/testimonials', label: 'Testimonials',     icon: Star },
   { to: '/dashboard/manager/content',      label: 'Public Content',   icon: Globe },
 ];
 

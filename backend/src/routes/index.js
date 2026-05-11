@@ -80,7 +80,10 @@ router.get( '/manager/dashboard',                  ...mgr, manager.getDashboard)
 router.get( '/manager/users',                      ...mgr, manager.getAllUsers);
 router.get( '/manager/partner-requests',           ...mgr, manager.getPartnerRequests);
 router.put( '/manager/partner-requests/:id/status',...mgr, manager.updatePartnerStatus);
+router.get(  '/manager/testimonials',              ...mgr, manager.getTestimonials);
 router.post('/manager/testimonials',               ...mgr, manager.addTestimonial);
+router.put( '/manager/testimonials/:id',           ...mgr, manager.updateTestimonial);
+router.delete('/manager/testimonials/:id',         ...mgr, manager.deleteTestimonial);
 router.post('/manager/projects',                   ...mgr, manager.createProject);
 router.put( '/manager/projects/:id',               ...mgr, manager.updateProject);
 router.delete('/manager/projects/:id',             ...mgr, manager.deleteProject);
