@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Music, LayoutDashboard, Users, FolderKanban, DollarSign,
-  Award, Calendar, Upload, MessageSquare, LogOut, ChevronLeft,
+  Award, Calendar, Upload, MessageSquare, Star, LogOut, ChevronLeft,
   ChevronRight, Globe, FileAudio, Bell, Settings, X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
