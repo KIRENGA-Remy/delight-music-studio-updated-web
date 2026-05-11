@@ -59,11 +59,6 @@ function TestimonialsSection({ testimonials }) {
         <motion.div {...FADE_UP} className="text-center mb-10">
           <span className="badge-gold mb-3">Client Love</span>
           <h2 className="section-title text-white mt-3">What They <span className="gradient-text">Say</span></h2>
-          {isPlaceholder && (
-            <p className="text-purple-600 text-xs mt-2 italic">
-              Sample testimonials — add real ones via the Manager Dashboard
-            </p>
-          )}
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
           {display.map((t, i) => (

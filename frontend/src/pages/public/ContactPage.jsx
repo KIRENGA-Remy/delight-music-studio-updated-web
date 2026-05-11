@@ -8,14 +8,13 @@ import api from '../../services/api';
 
 const CLIENT_TYPES = ['artist','student','intern','event_planner','other'];
 
-/* ── Company contact info ─────────────────────────────────── */
 const CONTACT = {
   address:    'Ruyenzi, Kamonyi District, Southern Province, Rwanda',
   road:       'Near Ruyenzi Trading Centre — Kamonyi–Kigali Road (RN1)',
   phone:      '+250 788 888 001',
   email:      'info@delightmusic.rw',
-  whatsapp:   'https://wa.me/250788888001',
-  hours:      'Mon – Sat: 8:00 AM – 7:00 PM',
+  whatsapp:   'https://wa.me/250783359865',
+  hours:      'Sun – Fri: 9:00 AM – 9:00 PM',
   mapUrl:     'https://maps.google.com/?q=Ruyenzi,Kamonyi,Rwanda',
   /* Google Maps embed — centred on Ruyenzi, Kamonyi District */
   mapEmbed:   'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.0!2d29.845!3d-2.095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dc3a8b9c2e5555%3A0xb27a9f3c7d6e1234!2sRuyenzi%2C%20Kamonyi%2C%20Rwanda!5e0!3m2!1sen!2srw!4v1700000000000!5m2!1sen!2srw',
