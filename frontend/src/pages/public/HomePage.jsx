@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music2, Mic2, Users, Star, ArrowRight, Play, Headphones,
   Piano, Guitar, Drum, Globe, Volume2, ChevronRight, Image as ImageIcon
@@ -8,6 +8,26 @@ import {
 import Navbar  from '../../components/layout/Navbar';
 import Footer  from '../../components/layout/Footer';
 import api, { fileUrl } from '../../services/api';
+
+/* ─── Hero background slideshow images ─────────────────────
+   Rename these to match your actual files in src/assets/.
+   You can mix .png / .jpg / .webp freely. */
+import st1 from '../../assets/st1.png';
+import st2 from '../../assets/st2.png';
+import st3 from '../../assets/st3.png';
+import st4 from '../../assets/st4.png';
+import st5 from '../../assets/st5.png';
+import st6 from '../../assets/st6.png';
+import st7 from '../../assets/st7.png';
+import st8 from '../../assets/st8.png';
+import st9 from '../../assets/st9.png';
+import st10 from '../../assets/st10.png';
+
+/* Hero background rotation — studio.png plus the 10 gallery shots.
+   Each one is shown for `interval` ms before crossfading to the next. */
+const HERO_BG_IMAGES = [
+  st1, st2, st3, st4, st5, st6, st7, st8, st9, st10,
+];
 
 /* ─── Fallback static data ─────────────────────────────── */
 const STATIC_SERVICES = [
@@ -89,6 +109,39 @@ function TestimonialsSection({ testimonials }) {
   );
 }
 
+/* ── Hero background slideshow ───────────────────────────────
+   Cycles through `images` on a timer, crossfading between each
+   one. The previous image fades out while the next fades in,
+   so there's no flash or jump — just a continuous, ambient
+   rotation behind the hero content. */
+function HeroBackgroundSlideshow({ images, interval = 3000 }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % images.length);
+    }, interval);
+    return () => clearInterval(id);
+  }, [images.length, interval]);
+
+  return (
+    <div className="absolute inset-0">
+      <AnimatePresence>
+        <motion.div
+          key={index}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('${images[index]}')` }}
+        />
+      </AnimatePresence>
+      <div className="absolute inset-0 bg-gradient-to-b from-dark-950/80 via-dark-950/60 to-dark-950" />
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [testimonials, setTestimonials] = useState([]);
   const [cmsContent,   setCmsContent]   = useState({});
@@ -116,7 +169,8 @@ export default function HomePage() {
   const heroMain  = heroItems[0];
   const heroTitle = heroMain?.title || 'Where Music Comes Alive';
   const heroSub   = heroMain?.subtitle || 'Professional audio production, vocal training, instrument lessons, and live event services in the heart of Kigali, Rwanda.';
-  const heroBg    = heroMain?.image_url ? fileUrl(heroMain.image_url) : 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1920&q=80';
+  // const heroBg    = heroMain?.image_url ? fileUrl(heroMain.image_url) : 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1920&q=80';
+
 
   const displayStats = statsItems.length > 0
     ? statsItems.map(s => ({ value: s.title, label: s.subtitle }))
@@ -140,14 +194,11 @@ export default function HomePage() {
 
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
-          style={{ backgroundImage: `url('${heroBg}')` }}>
-          <div className="absolute inset-0 bg-gradient-to-b from-dark-950/80 via-dark-950/60 to-dark-950" />
-        </div>
+        <HeroBackgroundSlideshow images={HERO_BG_IMAGES} interval={3000} />
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-24">
           <motion.div initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/10 border border-gold-500/30 mb-6">
-            <Star size={13} className="text-gold-400" fill="currentColor" />
+            {/* <Star size={13} className="text-gold-400" fill="currentColor" /> */}
             <span className="text-gold-400 text-xs font-bold tracking-wider uppercase">Rwanda's Premier Music Studio</span>
           </motion.div>
 
